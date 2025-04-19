@@ -19,6 +19,10 @@ export class Category {
   @ManyToMany(() => Menu, (m) => m.categories)
   menus = new Collection<Menu>(this);
 
-  @ManyToMany(() => Product, (p) => p.categories)
+  @ManyToMany(() => Product, (p) => p.categories, {
+    owner: true,
+    joinColumn: 'category_id',
+    inverseJoinColumn: 'product_id',
+  })
   products = new Collection<Product>(this);
 }

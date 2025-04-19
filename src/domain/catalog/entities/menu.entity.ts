@@ -29,6 +29,10 @@ export class Menu {
   @ManyToOne(() => Business)
   business: Business;
 
-  @ManyToMany(() => Category, (c) => c.menus)
+  @ManyToMany(() => Category, (c) => c.menus, {
+    owner: true,
+    joinColumn: 'menu_id',
+    inverseJoinColumn: 'category_id',
+  })
   categories = new Collection<Category>(this);
 }

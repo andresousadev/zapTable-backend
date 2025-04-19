@@ -1,4 +1,4 @@
-import { PostgreSqlDriver } from '@mikro-orm/postgresql';
+import { defineConfig, PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { Category } from './domain/catalog/entities/category.entity';
 import { Ingredient } from './domain/catalog/entities/ingredient.entity';
 import { Menu } from './domain/catalog/entities/menu.entity';
@@ -12,8 +12,16 @@ import { Staff } from './domain/user/entities/staff.entity';
 import { ProductAvailability } from './domain/catalog/entities/product-availability.entity';
 import { ProductCustomization } from './domain/catalog/entities/product-customization.entity';
 import { ProductPrice } from './domain/catalog/entities/product-price.entity';
+import { Migrator } from '@mikro-orm/migrations';
+import { User } from './domain/user/entities/user.entity';
 
-export const config = {
+export default defineConfig({
+  host: 'db',
+  port: 5432,
+  user: 'zapTable',
+  password: 'zapTable',
+  dbName: 'zapTable',
+  driver: PostgreSqlDriver,
   entities: [
     Category,
     Ingredient,
@@ -28,7 +36,11 @@ export const config = {
     Admin,
     Owner,
     Staff,
+    User,
   ],
-  dbName: 'zapTable',
-  driver: PostgreSqlDriver,
-};
+  extensions: [Migrator],
+  migrations: {
+    path: 'dist/migrations',
+    pathTs: 'src/migrations',
+  },
+});

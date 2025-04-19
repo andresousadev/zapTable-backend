@@ -31,7 +31,11 @@ export class Restaurant {
   @ManyToOne(() => Business)
   business: Business;
 
-  @ManyToMany(() => Staff, (s) => s.restaurants)
+  @ManyToMany(() => Staff, (s) => s.restaurants, {
+    owner: true,
+    joinColumn: 'restaurant_id',
+    inverseJoinColumn: 'staff_id',
+  })
   staff = new Collection<Staff>(this);
 
   @OneToMany(() => Table, (t) => t.restaurant, { orphanRemoval: true })

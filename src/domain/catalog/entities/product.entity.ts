@@ -33,7 +33,11 @@ export class Product {
   @ManyToMany(() => Category, (c) => c.products)
   categories = new Collection<Category>(this);
 
-  @ManyToMany({ entity: () => Ingredient, hidden: true })
+  @ManyToMany(() => Ingredient, (i) => i.products, {
+    owner: true,
+    joinColumn: 'product_id',
+    inverseJoinColumn: 'ingredient_id',
+  })
   ingredients = new Collection<Ingredient>(this);
 
   @Property()
