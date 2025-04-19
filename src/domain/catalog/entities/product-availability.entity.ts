@@ -12,4 +12,10 @@ export class ProductAvailability {
 
   @Property()
   active: boolean = true;
+
+  @Property()
+  createdAt = new Date();
+
+  @Property({ onUpdate: () => new Date() })
+  updatedAt = new Date();
 }

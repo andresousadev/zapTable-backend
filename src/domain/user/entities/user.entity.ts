@@ -17,4 +17,10 @@ export abstract class User {
 
   @Enum(() => UserRole)
   role: UserRole;
+
+  @Property()
+  createdAt = new Date();
+
+  @Property({ onUpdate: () => new Date() })
+  updatedAt = new Date();
 }

@@ -12,4 +12,10 @@ export class ProductPrice {
 
   @Property()
   price: number;
+
+  @Property()
+  createdAt = new Date();
+
+  @Property({ onUpdate: () => new Date() })
+  updatedAt = new Date();
 }

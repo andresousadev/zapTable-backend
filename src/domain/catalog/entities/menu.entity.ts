@@ -35,4 +35,10 @@ export class Menu {
     inverseJoinColumn: 'category_id',
   })
   categories = new Collection<Category>(this);
+
+  @Property()
+  createdAt = new Date();
+
+  @Property({ onUpdate: () => new Date() })
+  updatedAt = new Date();
 }

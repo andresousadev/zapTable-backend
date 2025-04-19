@@ -21,4 +21,10 @@ export class Table {
 
   @ManyToOne(() => Restaurant)
   restaurant: Restaurant;
+
+  @Property()
+  createdAt = new Date();
+
+  @Property({ onUpdate: () => new Date() })
+  updatedAt = new Date();
 }

@@ -25,4 +25,10 @@ export class Category {
     inverseJoinColumn: 'product_id',
   })
   products = new Collection<Product>(this);
+
+  @Property()
+  createdAt = new Date();
+
+  @Property({ onUpdate: () => new Date() })
+  updatedAt = new Date();
 }

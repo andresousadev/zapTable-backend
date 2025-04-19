@@ -40,4 +40,10 @@ export class Restaurant {
 
   @OneToMany(() => Table, (t) => t.restaurant, { orphanRemoval: true })
   tables = new Collection<Table>(this);
+
+  @Property()
+  createdAt = new Date();
+
+  @Property({ onUpdate: () => new Date() })
+  updatedAt = new Date();
 }
