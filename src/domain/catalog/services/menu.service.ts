@@ -1,9 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { CreateMenuDto } from '../dto/create-menu.dto';
 import { UpdateMenuDto } from '../dto/update-menu.dto';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { Menu } from '../entities/menu.entity';
+import { EntityRepository } from '@mikro-orm/core';
 
 @Injectable()
 export class MenuService {
+  constructor(
+    @InjectRepository(Menu)
+    private readonly menuRepo: EntityRepository<Menu>,
+  ) {}
   create(createMenuDto: CreateMenuDto) {
     return 'This action adds a new menu';
   }

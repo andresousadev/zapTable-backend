@@ -1,9 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { CreateRestaurantDto } from '../dto/create-restaurant.dto';
 import { UpdateRestaurantDto } from '../dto/update-restaurant.dto';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { Restaurant } from '../entities/restaurant.entity';
+import { EntityRepository } from '@mikro-orm/core';
 
 @Injectable()
 export class RestaurantService {
+  constructor(
+    @InjectRepository(Restaurant)
+    private readonly restaurantRepo: EntityRepository<Restaurant>,
+  ) {}
   create(createRestaurantDto: CreateRestaurantDto) {
     return 'This action adds a new restaurant';
   }

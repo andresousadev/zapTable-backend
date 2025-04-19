@@ -1,9 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { CreateBusinessDto } from '../dto/create-business.dto';
 import { UpdateBusinessDto } from '../dto/update-business.dto';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { Business } from '../entities/business.entity';
+import { EntityRepository } from '@mikro-orm/core';
 
 @Injectable()
 export class BusinessService {
+  constructor(
+    @InjectRepository(Business)
+    private readonly businessRepo: EntityRepository<Business>,
+  ) {}
   create(createBusinessDto: CreateBusinessDto) {
     return 'This action adds a new business';
   }

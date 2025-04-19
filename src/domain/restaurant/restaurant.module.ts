@@ -9,9 +9,13 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Business } from './entities/business.entity';
 import { Restaurant } from './entities/restaurant.entity';
 import { Table } from './entities/table.entity';
+import { CatalogModule } from '../catalog/catalog.module';
 
 @Module({
-  imports: [MikroOrmModule.forFeature([Business, Restaurant, Table])],
+  imports: [
+    MikroOrmModule.forFeature([Business, Restaurant, Table]),
+    CatalogModule,
+  ],
   controllers: [BusinessController, RestaurantController, TableController],
   providers: [BusinessService, RestaurantService, TableService],
 })
