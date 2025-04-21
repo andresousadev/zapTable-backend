@@ -5,11 +5,13 @@ import {
   ManyToOne,
   PrimaryKey,
   Property,
+  Unique,
 } from '@mikro-orm/core';
 import { Business } from 'src/domain/restaurant/entities/business.entity';
 import { Product } from './product.entity';
 
 @Entity()
+@Unique({ properties: ['name', 'business'] })
 export class Ingredient {
   @PrimaryKey()
   id: number;

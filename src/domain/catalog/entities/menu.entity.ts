@@ -1,15 +1,17 @@
 import {
   Collection,
   Entity,
-  ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryKey,
   Property,
+  Unique,
 } from '@mikro-orm/core';
 import { Business } from 'src/domain/restaurant/entities/business.entity';
 import { Category } from './category.entity';
 
 @Entity()
+@Unique({ properties: ['name', 'business'] })
 export class Menu {
   @PrimaryKey()
   id: number;
@@ -29,11 +31,7 @@ export class Menu {
   @ManyToOne(() => Business)
   business: Business;
 
-  @ManyToMany(() => Category, (c) => c.menus, {
-    owner: true,
-    joinColumn: 'menu_id',
-    inverseJoinColumn: 'category_id',
-  })
+  @OneToMany(() => Category, (c) => c.menu)
   categories = new Collection<Category>(this);
 
   @Property()

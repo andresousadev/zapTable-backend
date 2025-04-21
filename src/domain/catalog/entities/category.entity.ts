@@ -2,13 +2,16 @@ import {
   Collection,
   Entity,
   ManyToMany,
+  ManyToOne,
   PrimaryKey,
   Property,
+  Unique,
 } from '@mikro-orm/core';
 import { Menu } from './menu.entity';
 import { Product } from './product.entity';
 
 @Entity()
+@Unique({ properties: ['name', 'menu'] })
 export class Category {
   @PrimaryKey()
   id: number;
@@ -16,8 +19,8 @@ export class Category {
   @Property()
   name: string;
 
-  @ManyToMany(() => Menu, (m) => m.categories)
-  menus = new Collection<Menu>(this);
+  @ManyToOne(() => Menu)
+  menu: Menu;
 
   @ManyToMany(() => Product, (p) => p.categories, {
     owner: true,

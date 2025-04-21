@@ -18,7 +18,7 @@ export class Business {
   @PrimaryKey()
   id: number;
 
-  @Property()
+  @Property({ unique: true })
   name: string;
 
   @Property()

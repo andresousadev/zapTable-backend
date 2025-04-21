@@ -1,8 +1,16 @@
-import { Entity, Enum, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
+import {
+  Entity,
+  Enum,
+  ManyToOne,
+  PrimaryKey,
+  Property,
+  Unique,
+} from '@mikro-orm/core';
 import { TableStatus } from '../enums/table-status.enum';
 import { Restaurant } from './restaurant.entity';
 
 @Entity()
+@Unique({ properties: ['tableNumber', 'restaurant'] })
 export class Table {
   @PrimaryKey()
   id: number;

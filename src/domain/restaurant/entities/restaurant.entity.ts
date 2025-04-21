@@ -16,7 +16,7 @@ export class Restaurant {
   @PrimaryKey()
   id: number;
 
-  @Property()
+  @Property({ unique: true })
   name: string;
 
   @Property()

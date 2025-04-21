@@ -1,8 +1,9 @@
-import { Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { Entity, ManyToOne, Property, Unique } from '@mikro-orm/core';
 import { Product } from './product.entity';
 import { Ingredient } from './ingredient.entity';
 
 @Entity()
+@Unique({ properties: ['product', 'ingredient'] })
 export class ProductCustomization {
   @ManyToOne(() => Product, { primary: true })
   product: Product;
