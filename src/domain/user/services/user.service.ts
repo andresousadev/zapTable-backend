@@ -21,6 +21,7 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepo: EntityRepository<User>,
   ) {}
+
   async createOwner(createUserDto: CreateUserDto) {
     const owner = new Owner();
 
