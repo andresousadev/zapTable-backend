@@ -60,7 +60,9 @@ export class UserService {
 
     wrap(user).assign(updateUserDto, { onlyProperties: true });
 
-    this.userRepo.merge(user);
+    await this.userRepo.getEntityManager().flush();
+
+    return user;
   }
 
   async remove(id: number) {
@@ -75,7 +77,7 @@ export class UserService {
   ): Promise<User | null> {
     const { password, ...properties } = createUserDto;
 
-    const existing = this.findByEmail(properties.email);
+    const existing = await this.findByEmail(properties.email);
 
     if (existing != null) {
       throw new ConflictException('Email already being used');

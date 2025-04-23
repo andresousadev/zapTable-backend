@@ -1,23 +1,22 @@
 import { Entity, Enum, PrimaryKey, Property } from '@mikro-orm/core';
 import { UserRole } from '../enums/user-role.enum';
-import { Exclude } from 'class-transformer';
 
 @Entity({ discriminatorColumn: 'role' })
 export abstract class User {
   @PrimaryKey()
   id: number;
 
-  @Property()
+  @Property({ nullable: false })
   name: string;
 
-  @Property({ unique: true })
+  @Property({ unique: true, nullable: false })
   email: string;
 
-  @Exclude()
-  @Property()
+  @Property({ hidden: true, nullable: false })
   password: string;
 
   @Enum(() => UserRole)
+  @Property({ nullable: false })
   role: UserRole;
 
   @Property()
