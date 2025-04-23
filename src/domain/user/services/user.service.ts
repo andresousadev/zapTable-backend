@@ -1,11 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Admin } from '../entities/admin.entity';
-import { EntityRepository } from '@mikro-orm/core';
+import { EntityRepository, wrap } from '@mikro-orm/core';
 import { Staff } from '../entities/staff.entity';
 import { Owner } from '../entities/owner.entity';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { PasswordUtil } from '@app/shared/utils/password.util';
+import { User } from '../entities/user.entity';
 
 @Injectable()
 export class UserService {
@@ -16,24 +18,72 @@ export class UserService {
     private readonly adminRepo: EntityRepository<Admin>,
     @InjectRepository(Staff)
     private readonly staffRepo: EntityRepository<Staff>,
+    @InjectRepository(User)
+    private readonly userRepo: EntityRepository<User>,
   ) {}
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  async createOwner(createUserDto: CreateUserDto) {
+    const owner = new Owner();
+
+    await this.initializeUser(createUserDto, owner);
+    await this.ownerRepo.getEntityManager().persistAndFlush(owner);
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async createAdmin(createUserDto: CreateUserDto) {
+    const admin = new Admin();
+
+    await this.initializeUser(createUserDto, admin);
+    await this.adminRepo.getEntityManager().persistAndFlush(admin);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async createStaff(createUserDto: CreateUserDto) {
+    const staff = new Staff();
+
+    await this.initializeUser(createUserDto, staff);
+    await this.staffRepo.getEntityManager().persistAndFlush(staff);
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async findAll() {
+    return await this.userRepo.findAll();
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async findOne(id: number) {
+    return await this.userRepo.findOne(id);
+  }
+
+  async findByEmail(email: string) {
+    return await this.userRepo.findOne({ email });
+  }
+
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    const user = await this.userRepo.findOneOrFail(id);
+
+    wrap(user).assign(updateUserDto, { onlyProperties: true });
+
+    this.userRepo.merge(user);
+  }
+
+  async remove(id: number) {
+    const user = await this.userRepo.findOneOrFail(id);
+
+    await this.userRepo.getEntityManager().removeAndFlush(user);
+  }
+
+  async initializeUser(
+    createUserDto: CreateUserDto,
+    user: User,
+  ): Promise<User | null> {
+    const { password, ...properties } = createUserDto;
+
+    const existing = this.findByEmail(properties.email);
+
+    if (existing != null) {
+      throw new ConflictException('Email already being used');
+    }
+
+    wrap(user).assign(properties, { onlyProperties: true });
+
+    user.password = await PasswordUtil.hash(password);
+
+    return user;
   }
 }

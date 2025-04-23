@@ -38,31 +38,25 @@ export class CategoryService {
   }
 
   async update(id: number, createCategoryDto: CreateCategoryDto) {
-    const category = await this.categoryRepo.findOne(id);
+    const category = await this.categoryRepo.findOneOrFail(id);
 
-    if (category) {
-      const { productIds, ...properties } = createCategoryDto;
+    const { productIds, ...properties } = createCategoryDto;
 
-      if (productIds?.length) {
-        const products = await this.productRepo.find({
-          id: { $in: productIds },
-        });
-        category.products.set(products);
-      }
-
-      wrap(category).assign(properties, { onlyProperties: true });
-
-      this.categoryRepo.merge(category);
-    } else {
-      return null;
+    if (productIds?.length) {
+      const products = await this.productRepo.find({
+        id: { $in: productIds },
+      });
+      category.products.set(products);
     }
+
+    wrap(category).assign(properties, { onlyProperties: true });
+
+    this.categoryRepo.merge(category);
   }
 
   async remove(id: number) {
-    const category = await this.categoryRepo.findOne(id);
+    const category = await this.categoryRepo.findOneOrFail(id);
 
-    if (category) {
-      await this.categoryRepo.getEntityManager().removeAndFlush(category);
-    }
+    await this.categoryRepo.getEntityManager().removeAndFlush(category);
   }
 }
