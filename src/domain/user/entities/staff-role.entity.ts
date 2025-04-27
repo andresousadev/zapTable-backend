@@ -1,13 +1,13 @@
 import { Collection, Entity, ManyToMany } from '@mikro-orm/core';
-import { User } from './user.entity';
 import { Restaurant } from 'src/domain/restaurant/entities/restaurant.entity';
-import { UserRole } from '../enums/user-role.enum';
+import { UserRole } from './user-roles.entity';
+import { Role } from '../enums/role.enum';
 
 @Entity()
-export class Staff extends User {
+export class StaffRole extends UserRole {
   constructor() {
     super();
-    this.role = UserRole.STAFF;
+    this.role = Role.STAFF;
   }
 
   @ManyToMany(() => Restaurant, (r) => r.staff)

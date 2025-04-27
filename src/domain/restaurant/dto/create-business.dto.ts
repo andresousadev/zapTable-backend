@@ -22,9 +22,4 @@ export class CreateBusinessDto {
   @IsNumber()
   @IsNotEmpty()
   ownerId: number;
-
-  @IsArray()
-  @IsNumber({}, { each: true })
-  @IsOptional()
-  adminIds?: number[];
 }

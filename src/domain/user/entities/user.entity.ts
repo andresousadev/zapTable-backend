@@ -1,8 +1,14 @@
-import { Entity, Enum, PrimaryKey, Property } from '@mikro-orm/core';
-import { UserRole } from '../enums/user-role.enum';
+import {
+  Collection,
+  Entity,
+  OneToMany,
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core';
+import { UserRole } from './user-roles.entity';
 
-@Entity({ discriminatorColumn: 'role' })
-export abstract class User {
+@Entity()
+export class User {
   @PrimaryKey()
   id: number;
 
@@ -15,9 +21,9 @@ export abstract class User {
   @Property({ hidden: true, nullable: false })
   password: string;
 
-  @Enum(() => UserRole)
+  @OneToMany(() => UserRole, (u) => u.user)
   @Property({ nullable: false })
-  role: UserRole;
+  role = new Collection<UserRole>(this);
 
   @Property()
   createdAt = new Date();

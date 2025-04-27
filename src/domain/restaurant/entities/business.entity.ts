@@ -10,8 +10,8 @@ import { Ingredient } from 'src/domain/catalog/entities/ingredient.entity';
 import { Menu } from 'src/domain/catalog/entities/menu.entity';
 import { Product } from 'src/domain/catalog/entities/product.entity';
 import { Restaurant } from 'src/domain/restaurant/entities/restaurant.entity';
-import { Admin } from 'src/domain/user/entities/admin.entity';
-import { Owner } from 'src/domain/user/entities/owner.entity';
+import { OwnerRole } from '@app/domain/user/entities/owner-role.entity';
+import { User } from '@app/domain/user/entities/user.entity';
 
 @Entity()
 export class Business {
@@ -27,11 +27,8 @@ export class Business {
   @Property()
   photoSrc: string;
 
-  @ManyToOne(() => Owner)
-  owner: Owner;
-
-  @OneToMany(() => Admin, (a) => a.business, { orphanRemoval: true })
-  admin = new Collection<Admin>(this);
+  @ManyToOne(() => User)
+  owner: User;
 
   @OneToMany(() => Restaurant, (r) => r.business, { orphanRemoval: true })
   restaurants = new Collection<Restaurant>(this);

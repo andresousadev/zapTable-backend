@@ -30,6 +30,11 @@ export class BusinessController {
     return this.businessService.findOne(+id);
   }
 
+  @Get(':userid')
+  findByUser(@Param('userid') userid: string) {
+    return this.businessService.findByUserId(userid);
+  }
+
   @Patch(':id')
   update(
     @Param('id') id: string,

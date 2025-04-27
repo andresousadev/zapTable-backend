@@ -9,7 +9,7 @@ import {
 } from '@mikro-orm/core';
 import { Table } from 'src/domain/restaurant/entities/table.entity';
 import { Business } from './business.entity';
-import { Staff } from 'src/domain/user/entities/staff.entity';
+import { StaffRole } from '@app/domain/user/entities/staff-role.entity';
 
 @Entity()
 export class Restaurant {
@@ -31,12 +31,12 @@ export class Restaurant {
   @ManyToOne(() => Business)
   business: Business;
 
-  @ManyToMany(() => Staff, (s) => s.restaurants, {
+  @ManyToMany(() => StaffRole, (s) => s.restaurants, {
     owner: true,
     joinColumn: 'restaurant_id',
     inverseJoinColumn: 'staff_id',
   })
-  staff = new Collection<Staff>(this);
+  staff = new Collection<StaffRole>(this);
 
   @OneToMany(() => Table, (t) => t.restaurant, { orphanRemoval: true })
   tables = new Collection<Table>(this);

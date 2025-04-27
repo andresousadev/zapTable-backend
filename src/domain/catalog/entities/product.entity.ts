@@ -28,8 +28,8 @@ export class Product {
   @Property()
   photoSrc: string;
 
-  @Property()
-  defaultPrice: number;
+  @Property({ type: 'decimal', precision: 10, scale: 2 })
+  defaultPrice: string;
 
   @ManyToOne(() => Business)
   business: Business;

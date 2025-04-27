@@ -1,13 +1,13 @@
 import { Collection, Entity, OneToMany } from '@mikro-orm/core';
-import { User } from './user.entity';
 import { Business } from 'src/domain/restaurant/entities/business.entity';
-import { UserRole } from '../enums/user-role.enum';
+import { UserRole } from './user-roles.entity';
+import { Role } from '../enums/role.enum';
 
 @Entity()
-export class Owner extends User {
+export class OwnerRole extends UserRole {
   constructor() {
     super();
-    this.role = UserRole.OWNER;
+    this.role = Role.OWNER;
   }
 
   @OneToMany(() => Business, (b) => b.owner, { orphanRemoval: true })

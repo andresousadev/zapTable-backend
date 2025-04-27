@@ -11,8 +11,8 @@ export class ProductPrice {
   @ManyToOne(() => Menu, { primary: true })
   menu: Menu;
 
-  @Property()
-  price: number;
+  @Property({ type: 'decimal', precision: 10, scale: 2 })
+  price: string;
 
   @Property()
   createdAt = new Date();

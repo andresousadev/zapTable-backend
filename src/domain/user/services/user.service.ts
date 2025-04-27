@@ -1,46 +1,64 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { Admin } from '../entities/admin.entity';
-import { EntityRepository, wrap } from '@mikro-orm/core';
-import { Staff } from '../entities/staff.entity';
-import { Owner } from '../entities/owner.entity';
+import { EntityManager, EntityRepository, wrap } from '@mikro-orm/core';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { PasswordUtil } from '@app/shared/utils/password.util';
 import { User } from '../entities/user.entity';
+import { Business } from '@app/domain/restaurant/entities/business.entity';
+import { UserRoleService } from './user-role.service';
+import { Restaurant } from '@app/domain/restaurant/entities/restaurant.entity';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(Owner)
-    private readonly ownerRepo: EntityRepository<Owner>,
-    @InjectRepository(Admin)
-    private readonly adminRepo: EntityRepository<Admin>,
-    @InjectRepository(Staff)
-    private readonly staffRepo: EntityRepository<Staff>,
     @InjectRepository(User)
     private readonly userRepo: EntityRepository<User>,
+    private readonly userRoleService: UserRoleService,
+    private readonly em: EntityManager,
   ) {}
 
-  async createOwner(createUserDto: CreateUserDto) {
-    const owner = new Owner();
+  async createUser(createUserDto: CreateUserDto) {
+    const user = new User();
 
-    await this.initializeUser(createUserDto, owner);
-    await this.ownerRepo.getEntityManager().persistAndFlush(owner);
+    await this.initializeUser(createUserDto, user);
+    await this.userRepo.getEntityManager().persistAndFlush(user);
   }
 
-  async createAdmin(createUserDto: CreateUserDto) {
-    const admin = new Admin();
+  async makeOwner(userId: number, businessId: number) {
+    const user = this.userRepo.getReference(userId);
+    const business = this.em.getReference(Business, businessId);
 
-    await this.initializeUser(createUserDto, admin);
-    await this.adminRepo.getEntityManager().persistAndFlush(admin);
+    if (user != null && business != null) {
+      await this.userRoleService.createBusinessOwner(user, business);
+    } else {
+      throw new NotFoundException();
+    }
   }
 
-  async createStaff(createUserDto: CreateUserDto) {
-    const staff = new Staff();
+  async makeAdmin(userId: number) {
+    const user = this.userRepo.getReference(userId);
 
-    await this.initializeUser(createUserDto, staff);
-    await this.staffRepo.getEntityManager().persistAndFlush(staff);
+    if (user != null) {
+      await this.userRoleService.createAdmin(user);
+    } else {
+      throw new NotFoundException();
+    }
+  }
+
+  async makeStaff(userId: number, restaurantId: number) {
+    const user = this.userRepo.getReference(userId);
+    const restaurant = this.em.getReference(Restaurant, restaurantId);
+
+    if (user != null) {
+      await this.userRoleService.createStaff(user, restaurant);
+    } else {
+      throw new NotFoundException();
+    }
   }
 
   async findAll() {
