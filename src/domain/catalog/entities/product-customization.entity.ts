@@ -5,10 +5,10 @@ import { Ingredient } from './ingredient.entity';
 @Entity()
 @Unique({ properties: ['product', 'ingredient'] })
 export class ProductCustomization {
-  @ManyToOne(() => Product, { primary: true })
+  @ManyToOne(() => Product, { primary: true, deleteRule: 'cascade' })
   product: Product;
 
-  @ManyToOne(() => Ingredient, { primary: true })
+  @ManyToOne(() => Ingredient, { primary: true, deleteRule: 'cascade' })
   ingredient: Ingredient;
 
   @Property()

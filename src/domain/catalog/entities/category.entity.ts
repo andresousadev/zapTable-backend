@@ -19,7 +19,7 @@ export class Category {
   @Property()
   name: string;
 
-  @ManyToOne(() => Menu)
+  @ManyToOne(() => Menu, { deleteRule: 'cascade' })
   menu: Menu;
 
   @ManyToMany(() => Product, (p) => p.categories, {

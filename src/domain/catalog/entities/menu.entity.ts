@@ -28,7 +28,7 @@ export class Menu {
   @Property()
   active: boolean;
 
-  @ManyToOne(() => Business)
+  @ManyToOne(() => Business, { deleteRule: 'cascade' })
   business: Business;
 
   @OneToMany(() => Category, (c) => c.menu)

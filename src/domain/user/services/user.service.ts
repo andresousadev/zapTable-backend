@@ -74,7 +74,7 @@ export class UserService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const user = await this.userRepo.findOneOrFail(id);
+    const user = this.userRepo.getReference(id);
 
     wrap(user).assign(updateUserDto, { onlyProperties: true });
 
@@ -84,9 +84,11 @@ export class UserService {
   }
 
   async remove(id: number) {
-    const user = await this.userRepo.findOneOrFail(id);
+    const user = this.userRepo.getReference(id);
 
-    await this.userRepo.getEntityManager().removeAndFlush(user);
+    if (user != null) {
+      await this.userRepo.getEntityManager().removeAndFlush(user);
+    }
   }
 
   async initializeUser(

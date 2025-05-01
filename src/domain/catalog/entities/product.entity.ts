@@ -31,7 +31,7 @@ export class Product {
   @Property({ type: 'decimal', precision: 10, scale: 2 })
   defaultPrice: string;
 
-  @ManyToOne(() => Business)
+  @ManyToOne(() => Business, { deleteRule: 'cascade' })
   business: Business;
 
   @ManyToMany(() => Category, (c) => c.products)

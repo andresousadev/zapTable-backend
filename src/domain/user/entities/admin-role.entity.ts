@@ -1,5 +1,5 @@
 import { Entity } from '@mikro-orm/core';
-import { UserRole } from './user-roles.entity';
+import { UserRole } from './user-role.entity';
 import { Role } from '../enums/role.enum';
 
 @Entity()

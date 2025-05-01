@@ -5,7 +5,7 @@ import { Menu } from './menu.entity';
 @Entity()
 @Unique({ properties: ['product', 'menu'] })
 export class ProductPrice {
-  @ManyToOne(() => Product, { primary: true })
+  @ManyToOne(() => Product, { primary: true, deleteRule: 'cascade' })
   product: Product;
 
   @ManyToOne(() => Menu, { primary: true })

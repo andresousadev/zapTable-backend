@@ -11,7 +11,6 @@ import { Menu } from 'src/domain/catalog/entities/menu.entity';
 import { Product } from 'src/domain/catalog/entities/product.entity';
 import { Restaurant } from 'src/domain/restaurant/entities/restaurant.entity';
 import { OwnerRole } from '@app/domain/user/entities/owner-role.entity';
-import { User } from '@app/domain/user/entities/user.entity';
 
 @Entity()
 export class Business {
@@ -27,19 +26,19 @@ export class Business {
   @Property()
   photoSrc: string;
 
-  @ManyToOne(() => User)
-  owner: User;
+  @ManyToOne(() => OwnerRole)
+  owner: OwnerRole;
 
-  @OneToMany(() => Restaurant, (r) => r.business, { orphanRemoval: true })
+  @OneToMany(() => Restaurant, (r) => r.business)
   restaurants = new Collection<Restaurant>(this);
 
-  @OneToMany(() => Product, (p) => p.business, { orphanRemoval: true })
+  @OneToMany(() => Product, (p) => p.business)
   products = new Collection<Product>(this);
 
-  @OneToMany(() => Menu, (m) => m.business, { orphanRemoval: true })
+  @OneToMany(() => Menu, (m) => m.business)
   menus = new Collection<Menu>(this);
 
-  @OneToMany(() => Ingredient, (i) => i.business, { orphanRemoval: true })
+  @OneToMany(() => Ingredient, (i) => i.business)
   ingredients = new Collection<Ingredient>(this);
 
   @Property()

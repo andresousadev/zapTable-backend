@@ -7,7 +7,7 @@ export abstract class UserRole {
   @PrimaryKey()
   id: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { deleteRule: 'cascade' })
   user: User;
 
   @Enum(() => Role)

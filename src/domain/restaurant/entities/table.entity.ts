@@ -27,7 +27,7 @@ export class Table {
   @Enum(() => TableStatus)
   status: TableStatus;
 
-  @ManyToOne(() => Restaurant)
+  @ManyToOne(() => Restaurant, { deleteRule: 'cascade' })
   restaurant: Restaurant;
 
   @Property()

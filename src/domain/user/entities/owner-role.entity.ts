@@ -1,7 +1,7 @@
 import { Collection, Entity, OneToMany } from '@mikro-orm/core';
-import { Business } from 'src/domain/restaurant/entities/business.entity';
-import { UserRole } from './user-roles.entity';
+import { UserRole } from './user-role.entity';
 import { Role } from '../enums/role.enum';
+import { Business } from '@app/domain/restaurant/entities/business.entity';
 
 @Entity()
 export class OwnerRole extends UserRole {

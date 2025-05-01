@@ -2,10 +2,14 @@ import {
   Collection,
   Entity,
   OneToMany,
+  OneToOne,
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
-import { UserRole } from './user-roles.entity';
+import { UserRole } from './user-role.entity';
+import { OwnerRole } from './owner-role.entity';
+import { StaffRole } from './staff-role.entity';
+import { AdminRole } from './admin-role.entity';
 
 @Entity()
 export class User {
@@ -14,6 +18,15 @@ export class User {
 
   @Property({ nullable: false })
   name: string;
+
+  @OneToMany(() => OwnerRole, (o) => o.user)
+  ownerRoles = new Collection<OwnerRole>(this);
+
+  @OneToMany(() => StaffRole, (s) => s.user)
+  staffRoles = new Collection<StaffRole>(this);
+
+  @OneToOne(() => AdminRole, (a) => a.user)
+  adminRole: AdminRole;
 
   @Property({ unique: true, nullable: false })
   email: string;

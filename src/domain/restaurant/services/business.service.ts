@@ -37,15 +37,24 @@ export class BusinessService {
     return await this.businessRepo.findOne(id);
   }
 
-  async findByOwnerId(userid: string) {
-    const user = this.em.getReference(User, +userid);
+  async findByUserId(userid: string) {
+    const owner = this.em.getReference(User, +userid);
+    const businessOwner = await this.businessRepo.findOne({ owner });
   }
 
-  update(id: number, updateBusinessDto: UpdateBusinessDto) {
-    return `This action updates a #${id} business`;
+  async update(id: number, updateBusinessDto: UpdateBusinessDto) {
+    const business = this.businessRepo.getReference(id);
+
+    wrap(business).assign(updateBusinessDto, { onlyProperties: true });
+
+    await this.businessRepo.getEntityManager().removeAndFlush(business);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} business`;
+  async remove(id: number) {
+    const business = this.businessRepo.getReference(id);
+
+    if (business != null) {
+      await this.businessRepo.getEntityManager().removeAndFlush(business);
+    }
   }
 }

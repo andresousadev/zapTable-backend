@@ -28,7 +28,7 @@ export class Restaurant {
   @Property()
   photoSrc: string;
 
-  @ManyToOne(() => Business)
+  @ManyToOne(() => Business, { deleteRule: 'cascade' })
   business: Business;
 
   @ManyToMany(() => StaffRole, (s) => s.restaurants, {

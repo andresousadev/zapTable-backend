@@ -25,7 +25,7 @@ export class Ingredient {
   @Property()
   photoSrc: string;
 
-  @ManyToOne(() => Business)
+  @ManyToOne(() => Business, { deleteRule: 'cascade' })
   business: Business;
 
   @ManyToMany(() => Product, (p) => p.ingredients)
