@@ -1,19 +1,16 @@
-import { DomainException } from '@app/shared/errors/domain-exception.base';
+import { BaseException } from '@app/domain/errors/base.exception';
 
-export class UserRoleAlreadyExists extends DomainException {
-  constructor() {
-    super('There is already an user with that role for that entity');
+export class AdminRoleAlreadyExists extends BaseException {
+  constructor(userid: number) {
+    super(`The user with the id ${userid} is already an admin`, 409);
   }
 }
 
-export class AdminRoleAlreadyExists extends DomainException {
-  constructor() {
-    super('The user is already an admin');
-  }
-}
-
-export class StaffRoleAlreadyExists extends DomainException {
-  constructor() {
-    super('The user is already a staff member of that restaurant');
+export class StaffRoleAlreadyExists extends BaseException {
+  constructor(userid: number, restaurantId: number) {
+    super(
+      `The user with the id ${userid} is already a staff member of the restaurant with the id ${restaurantId}`,
+      409,
+    );
   }
 }
