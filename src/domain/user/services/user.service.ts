@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityManager, EntityRepository, wrap } from '@mikro-orm/core';
 import { CreateUserDto } from '../dto/create-user.dto';
@@ -12,6 +8,8 @@ import { User } from '../entities/user.entity';
 import { Business } from '@app/domain/restaurant/entities/business.entity';
 import { UserRoleService } from './user-role.service';
 import { Restaurant } from '@app/domain/restaurant/entities/restaurant.entity';
+import { BusinessNotFoundError } from '@app/domain/restaurant/errors/business.error';
+import { UserNotFoundByIdError, UserNotFoundError } from '../errors/user.error';
 
 @Injectable()
 export class UserService {
@@ -30,35 +28,27 @@ export class UserService {
   }
 
   async makeOwner(userId: number, businessId: number) {
-    const user = this.userRepo.getReference(userId);
+    const user = this.searchForUser(userId);
     const business = this.em.getReference(Business, businessId);
 
-    if (user != null && business != null) {
-      await this.userRoleService.createBusinessOwner(user, business);
-    } else {
-      throw new NotFoundException();
+    if (business == null) {
+      throw new BusinessNotFoundError(businessId);
     }
+
+    await this.userRoleService.createBusinessOwner(user, business);
   }
 
   async makeAdmin(userId: number) {
-    const user = this.userRepo.getReference(userId);
+    const user = this.searchForUser(userId);
 
-    if (user != null) {
-      await this.userRoleService.createAdmin(user);
-    } else {
-      throw new NotFoundException();
-    }
+    await this.userRoleService.createAdmin(user);
   }
 
   async makeStaff(userId: number, restaurantId: number) {
-    const user = this.userRepo.getReference(userId);
+    const user = this.searchForUser(userId);
     const restaurant = this.em.getReference(Restaurant, restaurantId);
 
-    if (user != null) {
-      await this.userRoleService.createStaff(user, restaurant);
-    } else {
-      throw new NotFoundException();
-    }
+    await this.userRoleService.createStaff(user, restaurant);
   }
 
   async findAll() {
@@ -74,7 +64,7 @@ export class UserService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const user = this.userRepo.getReference(id);
+    const user = this.searchForUser(id);
 
     wrap(user).assign(updateUserDto, { onlyProperties: true });
 
@@ -84,11 +74,9 @@ export class UserService {
   }
 
   async remove(id: number) {
-    const user = this.userRepo.getReference(id);
+    const user = this.searchForUser(id);
 
-    if (user != null) {
-      await this.userRepo.getEntityManager().removeAndFlush(user);
-    }
+    await this.userRepo.getEntityManager().removeAndFlush(user);
   }
 
   async initializeUser(
@@ -100,12 +88,22 @@ export class UserService {
     const existing = await this.findByEmail(properties.email);
 
     if (existing != null) {
-      throw new ConflictException('Email already being used');
+      throw new UserNotFoundError();
     }
 
     wrap(user).assign(properties, { onlyProperties: true });
 
     user.password = await PasswordUtil.hash(password);
+
+    return user;
+  }
+
+  searchForUser(userId: number) {
+    const user = this.userRepo.getReference(userId);
+
+    if (user == null) {
+      throw new UserNotFoundByIdError(userId);
+    }
 
     return user;
   }
