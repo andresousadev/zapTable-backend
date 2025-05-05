@@ -7,7 +7,11 @@ import { EntityRepository, wrap } from '@mikro-orm/core';
 import { Business } from '../entities/business.entity';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { BusinessNotFoundError } from '../errors/business.error';
-import { RestaurantWithoutNameError } from '../errors/restaurant.error';
+import {
+  RestaurantByBusinessIdError,
+  RestaurantNotFoundError,
+  RestaurantWithoutNameError,
+} from '../errors/restaurant.error';
 import { Utils } from '@app/shared/utils/utils.util';
 
 @Injectable()
@@ -42,19 +46,48 @@ export class RestaurantService {
     await this.restaurantRepo.getEntityManager().persistAndFlush(restaurant);
   }
 
-  findAll() {
-    return `This action returns all restaurant`;
+  async findAll() {
+    return await this.restaurantRepo.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} restaurant`;
+  async findOne(id: number) {
+    return await this.restaurantRepo.findOne(id);
   }
 
-  update(id: number, updateRestaurantDto: UpdateRestaurantDto) {
-    return `This action updates a #${id} restaurant`;
+  async findByBusinessId(businessId: number) {
+    try {
+      const restaurants = await this.restaurantRepo.find({
+        business: {
+          id: businessId,
+        },
+      });
+
+      return restaurants;
+    } catch (error) {
+      console.error('Error fetching restaurants by business ID', error);
+      throw new RestaurantByBusinessIdError(businessId);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} restaurant`;
+  async update(id: number, updateRestaurantDto: UpdateRestaurantDto) {
+    const restaurant = this.restaurantRepo.getReference(id);
+
+    if (restaurant == null) {
+      throw new RestaurantNotFoundError(id);
+    }
+
+    wrap(restaurant).assign(updateRestaurantDto, { onlyProperties: true });
+
+    await this.restaurantRepo.getEntityManager().removeAndFlush(restaurant);
+  }
+
+  async remove(id: number) {
+    const restaurant = this.restaurantRepo.getReference(id);
+
+    if (restaurant == null) {
+      throw new RestaurantNotFoundError(id);
+    }
+
+    await this.restaurantRepo.getEntityManager().removeAndFlush(restaurant);
   }
 }

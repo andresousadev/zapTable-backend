@@ -8,6 +8,12 @@ export class RestaurantNotFoundError extends BaseException {
 
 export class RestaurantWithoutNameError extends BaseException {
   constructor() {
-    super(`The restaurant should have a name`, 500);
+    super('The restaurant should have a name', 500);
+  }
+}
+
+export class RestaurantByBusinessIdError extends BaseException {
+  constructor(businessId: number) {
+    super(`Error fetching restaurants by the business id ${businessId}`, 500);
   }
 }

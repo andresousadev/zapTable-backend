@@ -5,7 +5,10 @@ import { InjectRepository } from '@mikro-orm/nestjs';
 import { Business } from '../entities/business.entity';
 import { EntityManager, EntityRepository, wrap } from '@mikro-orm/core';
 import { User } from '@app/domain/user/entities/user.entity';
-import { BusinessByUserIdError } from '../errors/business.error';
+import {
+  BusinessByUserIdError,
+  BusinessNotFoundError,
+} from '../errors/business.error';
 
 @Injectable()
 export class BusinessService {
@@ -38,7 +41,7 @@ export class BusinessService {
     return await this.businessRepo.findOne(id);
   }
 
-  async findByUserId(userid: string) {
+  async findByUserId(userid: number) {
     try {
       const businesses = await this.businessRepo.find({
         owner: {
@@ -57,6 +60,10 @@ export class BusinessService {
   async update(id: number, updateBusinessDto: UpdateBusinessDto) {
     const business = this.businessRepo.getReference(id);
 
+    if (business == null) {
+      throw new BusinessNotFoundError(id);
+    }
+
     wrap(business).assign(updateBusinessDto, { onlyProperties: true });
 
     await this.businessRepo.getEntityManager().removeAndFlush(business);
@@ -65,8 +72,10 @@ export class BusinessService {
   async remove(id: number) {
     const business = this.businessRepo.getReference(id);
 
-    if (business != null) {
-      await this.businessRepo.getEntityManager().removeAndFlush(business);
+    if (business == null) {
+      throw new BusinessNotFoundError(id);
     }
+
+    await this.businessRepo.getEntityManager().removeAndFlush(business);
   }
 }
