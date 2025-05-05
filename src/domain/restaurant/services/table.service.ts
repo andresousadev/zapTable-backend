@@ -23,25 +23,27 @@ export class TableService {
 
     const restaurant = this.em.getReference(Restaurant, restaurantId);
 
-    if (restaurant != null) {
-      const existing = await this.tableRepo.findOne({
-        restaurant,
-        tableNumber,
-      });
-
-      if (existing != null) {
-        throw new TableAlreadyExistsError();
-      } else {
-        wrap(table).assign(properties, { onlyProperties: true });
-
-        table.restaurant = restaurant;
-        table.tableNumber = tableNumber;
-
-        await this.tableRepo.getEntityManager().persistAndFlush(table);
-      }
-    } else {
-      throw new RestaurantNotFoundError();
+    if (restaurant == null) {
+      throw new RestaurantNotFoundError(restaurantId);
     }
+
+    const existingTable = this.tableRepo.find({
+      restaurant: {
+        id: restaurantId,
+      },
+      tableNumber: tableNumber,
+    });
+
+    if (existingTable != null) {
+      throw new TableAlreadyExistsError(tableNumber, restaurantId);
+    }
+
+    wrap(table).assign(properties, { onlyProperties: true });
+
+    table.restaurant = restaurant;
+    table.tableNumber = tableNumber;
+
+    await this.tableRepo.getEntityManager().persistAndFlush(table);
   }
 
   async findAll() {
