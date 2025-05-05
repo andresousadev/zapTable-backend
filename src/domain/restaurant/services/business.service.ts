@@ -5,6 +5,7 @@ import { InjectRepository } from '@mikro-orm/nestjs';
 import { Business } from '../entities/business.entity';
 import { EntityManager, EntityRepository, wrap } from '@mikro-orm/core';
 import { User } from '@app/domain/user/entities/user.entity';
+import { BusinessByUserIdError } from '../errors/business.error';
 
 @Injectable()
 export class BusinessService {
@@ -38,8 +39,19 @@ export class BusinessService {
   }
 
   async findByUserId(userid: string) {
-    const owner = this.em.getReference(User, +userid);
-    const businessOwner = await this.businessRepo.findOne({ owner });
+    try {
+      const businesses = await this.businessRepo.find({
+        owner: {
+          user: {
+            id: +userid,
+          },
+        },
+      });
+      return businesses;
+    } catch (error) {
+      console.error('Error fetching business by owner ID: ', error);
+      throw new BusinessByUserIdError(+userid);
+    }
   }
 
   async update(id: number, updateBusinessDto: UpdateBusinessDto) {

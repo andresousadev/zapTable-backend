@@ -5,3 +5,9 @@ export class RestaurantNotFoundError extends BaseException {
     super(`Restaurant with the id ${restaurantId} not found`, 404);
   }
 }
+
+export class RestaurantWithoutNameError extends BaseException {
+  constructor() {
+    super(`The restaurant should have a name`, 500);
+  }
+}
