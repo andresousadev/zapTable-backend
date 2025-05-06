@@ -8,3 +8,9 @@ export class TableAlreadyExistsError extends BaseException {
     );
   }
 }
+
+export class TableNotFoundError extends BaseException {
+  constructor(tableId: number) {
+    super(`Table with the id ${tableId} was not found`, 404);
+  }
+}

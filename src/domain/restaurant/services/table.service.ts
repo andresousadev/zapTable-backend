@@ -7,7 +7,11 @@ import { EntityRepository, wrap } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Restaurant } from '../entities/restaurant.entity';
 import { RestaurantNotFoundError } from '../errors/restaurant.error';
-import { TableAlreadyExistsError } from '../errors/table.error';
+import {
+  TableAlreadyExistsError,
+  TableNotFoundError,
+} from '../errors/table.error';
+import { TableStatus } from '../enums/table-status.enum';
 
 @Injectable()
 export class TableService {
@@ -52,6 +56,28 @@ export class TableService {
 
   async findOne(id: number) {
     return await this.tableRepo.findOne(id);
+  }
+
+  async findByRestaurantId(restaurantId: number) {
+    const tables = await this.tableRepo.find({
+      restaurant: {
+        id: restaurantId,
+      },
+    });
+
+    return tables;
+  }
+
+  async changeTableStatus(tableId: number, status: TableStatus) {
+    const table = this.tableRepo.getReference(tableId);
+
+    if (table == null) {
+      throw new TableNotFoundError(tableId);
+    }
+
+    table.status = status;
+
+    await this.tableRepo.getEntityManager().persistAndFlush(table);
   }
 
   async update(id: number, updateTableDto: UpdateTableDto) {
