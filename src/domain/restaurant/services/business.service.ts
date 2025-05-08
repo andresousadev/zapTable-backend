@@ -74,7 +74,7 @@ export class BusinessService {
 
     wrap(business).assign(updateBusinessDto, { onlyProperties: true });
 
-    await this.businessRepo.getEntityManager().removeAndFlush(business);
+    await this.businessRepo.getEntityManager().persistAndFlush(business);
   }
 
   async remove(id: number) {
