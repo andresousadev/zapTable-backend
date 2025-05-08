@@ -1,33 +1,68 @@
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable } from '@nestjs/common';
 import { Ingredient } from '../entities/ingredient.entity';
-import { EntityRepository } from '@mikro-orm/core';
+import { EntityRepository, wrap } from '@mikro-orm/core';
 import { CreateIngredientDto } from '../dto/create-ingredient.dto';
 import { UpdateIngredientDto } from '../dto/update-ingredient.dto';
+import { EntityManager } from '@mikro-orm/postgresql';
+import { Business } from '@app/domain/restaurant/entities/business.entity';
+import { BusinessNotFoundError } from '@app/domain/restaurant/errors/business.error';
+import { IngredientNotFoundError } from '../errors/ingredient.error';
 
 @Injectable()
 export class IngredientService {
   constructor(
     @InjectRepository(Ingredient)
     private readonly ingredientRepo: EntityRepository<Ingredient>,
+    private readonly em: EntityManager,
   ) {}
-  create(createIngredientDto: CreateIngredientDto) {
-    return 'This action adds a new ingredient';
+  async create(createIngredientDto: CreateIngredientDto) {
+    const ingredient = new Ingredient();
+
+    const { businessId, ...properties } = createIngredientDto;
+
+    wrap(ingredient).assign(properties, { onlyProperties: true });
+
+    const business = this.em.getReference(Business, businessId);
+
+    if (business == null) throw new BusinessNotFoundError(businessId);
+
+    ingredient.business = business;
+
+    await this.ingredientRepo.getEntityManager().persistAndFlush(ingredient);
   }
 
-  findAll() {
-    return `This action returns all ingredient`;
+  async findAll() {
+    await this.ingredientRepo.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} ingredient`;
+  async findOne(id: number) {
+    return await this.ingredientRepo.findOne(id);
   }
 
-  update(id: number, updateIngredientDto: UpdateIngredientDto) {
-    return `This action updates a #${id} ingredient`;
+  async findByBusinessId(businessId: number) {
+    const business = this.em.getReference(Business, businessId);
+
+    if (business == null) throw new BusinessNotFoundError(businessId);
+
+    return await this.ingredientRepo.find({ business });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} ingredient`;
+  async update(id: number, updateIngredientDto: UpdateIngredientDto) {
+    const ingredient = this.ingredientRepo.getReference(id);
+
+    if (ingredient == null) throw new IngredientNotFoundError(id);
+
+    wrap(ingredient).assign(updateIngredientDto, { onlyProperties: true });
+
+    await this.ingredientRepo.getEntityManager().persistAndFlush(ingredient);
+  }
+
+  async remove(id: number) {
+    const ingredient = this.ingredientRepo.getReference(id);
+
+    if (ingredient == null) throw new IngredientNotFoundError(id);
+
+    await this.ingredientRepo.getEntityManager().removeAndFlush(ingredient);
   }
 }

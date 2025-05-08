@@ -3,7 +3,7 @@ import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 export class CreateIngredientDto {
   @IsString()
   @IsNotEmpty()
-  nome: string;
+  name: string;
 
   @IsString()
   @IsOptional()
