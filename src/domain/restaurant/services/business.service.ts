@@ -9,6 +9,8 @@ import {
   BusinessByUserIdError,
   BusinessNotFoundError,
 } from '../errors/business.error';
+import { UserNotFoundByIdError } from '@app/domain/user/errors/user.error';
+import { OwnerRole } from '@app/domain/user/entities/owner-role.entity';
 
 @Injectable()
 export class BusinessService {
@@ -20,17 +22,23 @@ export class BusinessService {
   async create(createBusinessDto: CreateBusinessDto) {
     const business = new Business();
 
-    const { ownerId = 1, ...properties } = createBusinessDto;
+    const { ownerId, ...properties } = createBusinessDto;
 
     wrap(business).assign(properties, { onlyProperties: true });
 
     const user = this.em.getReference(User, ownerId);
 
-    if (user != null) {
-      await this.businessRepo.getEntityManager().persistAndFlush(business);
-    } else {
-      throw new NotFoundException('User not found');
+    if (user == null) {
+      throw new UserNotFoundByIdError(ownerId);
     }
+
+    const ownerRole = new OwnerRole();
+    ownerRole.businesses.add(business);
+    ownerRole.user = user;
+
+    business.owner = ownerRole;
+
+    await this.businessRepo.getEntityManager().persistAndFlush(business);
   }
 
   async findAll() {
