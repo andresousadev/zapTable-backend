@@ -78,7 +78,7 @@ export class RestaurantService {
 
     wrap(restaurant).assign(updateRestaurantDto, { onlyProperties: true });
 
-    await this.restaurantRepo.getEntityManager().removeAndFlush(restaurant);
+    await this.restaurantRepo.getEntityManager().persistAndFlush(restaurant);
   }
 
   async remove(id: number) {

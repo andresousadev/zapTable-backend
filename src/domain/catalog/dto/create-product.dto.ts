@@ -1,9 +1,12 @@
+import { Transform } from 'class-transformer';
 import {
   IsArray,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
+  Matches,
+  Min,
 } from 'class-validator';
 
 export class CreateProductDto {
@@ -19,9 +22,12 @@ export class CreateProductDto {
   @IsOptional()
   photoSrc?: string;
 
+  @IsString()
+  @Matches(/^-?\d+(\.\d{1,2})?$/)
+  @Transform(({ value }) => Number(value))
   @IsNumber()
-  @IsNotEmpty()
-  defaultPrice: number;
+  @Min(0)
+  defaultPrice: string;
 
   @IsNumber()
   @IsNotEmpty()
