@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { BusinessService } from '../services/business.service';
 import { CreateBusinessDto } from '../dto/create-business.dto';
@@ -26,25 +27,25 @@ export class BusinessController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.businessService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.businessService.findOne(id);
   }
 
   @Get(':userid')
-  findByUser(@Param('userid') userid: string) {
+  findByUser(@Param('userid', ParseIntPipe) userid: number) {
     return this.businessService.findByUserId(userid);
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateBusinessDto: UpdateBusinessDto,
   ) {
-    return this.businessService.update(+id, updateBusinessDto);
+    return this.businessService.update(id, updateBusinessDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseIntPipe) id: number) {
     return this.businessService.remove(+id);
   }
 }

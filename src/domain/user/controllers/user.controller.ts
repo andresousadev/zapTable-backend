@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
 } from '@nestjs/common';
@@ -15,19 +16,30 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post('owner')
-  createOwner(@Body() createUserDto: CreateUserDto) {
-    return this.userService.createOwner(createUserDto);
+  @Post()
+  createUser(@Body() createUserDto: CreateUserDto) {
+    return this.userService.createUser(createUserDto);
   }
 
   @Post('admin')
-  createAdmin(@Body() createUserDto: CreateUserDto) {
-    return this.userService.createAdmin(createUserDto);
+  createAdmin(@Param('userId', ParseIntPipe) userId: number) {
+    return this.userService.makeAdmin(userId);
+  }
+
+  @Post('owner')
+  createOwner(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Param('businessId', ParseIntPipe) businessId: number,
+  ) {
+    return this.userService.makeOwner(userId, businessId);
   }
 
   @Post('staff')
-  createStaff(@Body() createUserDto: CreateUserDto) {
-    return this.userService.createStaff(createUserDto);
+  createStaff(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Param('restaurantId', ParseIntPipe) restaurantId: number,
+  ) {
+    return this.userService.makeStaff(userId, restaurantId);
   }
 
   @Get()
@@ -36,8 +48,8 @@ export class UserController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.userService.findOne(id);
   }
 
   @Get(':email')
@@ -46,12 +58,15 @@ export class UserController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.userService.remove(id);
   }
 }

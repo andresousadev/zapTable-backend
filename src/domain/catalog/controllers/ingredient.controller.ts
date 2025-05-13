@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
 } from '@nestjs/common';
@@ -26,20 +27,20 @@ export class IngredientController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.ingredientService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.ingredientService.findOne(id);
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateIngredientDto: UpdateIngredientDto,
   ) {
-    return this.ingredientService.update(+id, updateIngredientDto);
+    return this.ingredientService.update(id, updateIngredientDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.ingredientService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.ingredientService.remove(id);
   }
 }

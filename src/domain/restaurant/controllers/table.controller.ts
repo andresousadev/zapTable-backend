@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { TableService } from '../services/table.service';
 import { CreateTableDto } from '../dto/create-table.dto';
@@ -26,17 +27,20 @@ export class TableController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.tableService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.tableService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTableDto: UpdateTableDto) {
-    return this.tableService.update(+id, updateTableDto);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateTableDto: UpdateTableDto,
+  ) {
+    return this.tableService.update(id, updateTableDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.tableService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.tableService.remove(id);
   }
 }
