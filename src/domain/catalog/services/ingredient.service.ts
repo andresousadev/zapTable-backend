@@ -1,12 +1,12 @@
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { Injectable } from '@nestjs/common';
-import { Ingredient } from '../entities/ingredient.entity';
+import { Business } from '@app/domain/business/entities/business.entity';
+import { BusinessNotFoundError } from '@app/domain/business/errors/business.error';
 import { EntityRepository, wrap } from '@mikro-orm/core';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { EntityManager } from '@mikro-orm/postgresql';
+import { Injectable } from '@nestjs/common';
 import { CreateIngredientDto } from '../dto/create-ingredient.dto';
 import { UpdateIngredientDto } from '../dto/update-ingredient.dto';
-import { EntityManager } from '@mikro-orm/postgresql';
-import { Business } from '@app/domain/restaurant/entities/business.entity';
-import { BusinessNotFoundError } from '@app/domain/restaurant/errors/business.error';
+import { Ingredient } from '../entities/ingredient.entity';
 import { IngredientNotFoundError } from '../errors/ingredient.error';
 
 @Injectable()

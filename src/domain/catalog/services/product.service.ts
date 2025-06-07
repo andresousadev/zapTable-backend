@@ -1,12 +1,12 @@
+import { Business } from '@app/domain/business/entities/business.entity';
+import { BusinessNotFoundError } from '@app/domain/business/errors/business.error';
+import { Utils } from '@app/shared/utils/utils.util';
+import { EntityManager, EntityRepository, wrap } from '@mikro-orm/core';
+import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable } from '@nestjs/common';
 import { CreateProductDto } from '../dto/create-product.dto';
 import { UpdateProductDto } from '../dto/update-product.dto';
-import { InjectRepository } from '@mikro-orm/nestjs';
 import { Product } from '../entities/product.entity';
-import { EntityManager, EntityRepository, wrap } from '@mikro-orm/core';
-import { Business } from '@app/domain/restaurant/entities/business.entity';
-import { BusinessNotFoundError } from '@app/domain/restaurant/errors/business.error';
-import { Utils } from '@app/shared/utils/utils.util';
 import { ProductNotFoundError } from '../errors/product.error';
 
 @Injectable()

@@ -1,3 +1,4 @@
+import { Business } from '@app/domain/business/entities/business.entity';
 import {
   Collection,
   Entity,
@@ -7,7 +8,6 @@ import {
   Property,
   Unique,
 } from '@mikro-orm/core';
-import { Business } from 'src/domain/restaurant/entities/business.entity';
 import { Product } from './product.entity';
 
 @Entity()

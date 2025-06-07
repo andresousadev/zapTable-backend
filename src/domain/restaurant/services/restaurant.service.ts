@@ -1,18 +1,18 @@
+import { Utils } from '@app/shared/utils/utils.util';
+import { EntityRepository, wrap } from '@mikro-orm/core';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
+import { Business } from '../../business/entities/business.entity';
+import { BusinessNotFoundError } from '../../business/errors/business.error';
 import { CreateRestaurantDto } from '../dto/create-restaurant.dto';
 import { UpdateRestaurantDto } from '../dto/update-restaurant.dto';
-import { InjectRepository } from '@mikro-orm/nestjs';
 import { Restaurant } from '../entities/restaurant.entity';
-import { EntityRepository, wrap } from '@mikro-orm/core';
-import { Business } from '../entities/business.entity';
-import { EntityManager } from '@mikro-orm/postgresql';
-import { BusinessNotFoundError } from '../errors/business.error';
 import {
   RestaurantByBusinessIdError,
   RestaurantNotFoundError,
   RestaurantWithoutNameError,
 } from '../errors/restaurant.error';
-import { Utils } from '@app/shared/utils/utils.util';
 
 @Injectable()
 export class RestaurantService {

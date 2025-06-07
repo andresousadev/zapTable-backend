@@ -1,3 +1,4 @@
+import { StaffRole } from '@app/domain/user/entities/staff-role.entity';
 import {
   Collection,
   Entity,
@@ -8,8 +9,7 @@ import {
   Property,
 } from '@mikro-orm/core';
 import { Table } from 'src/domain/restaurant/entities/table.entity';
-import { Business } from './business.entity';
-import { StaffRole } from '@app/domain/user/entities/staff-role.entity';
+import { Business } from '../../business/entities/business.entity';
 
 @Entity()
 export class Restaurant {
