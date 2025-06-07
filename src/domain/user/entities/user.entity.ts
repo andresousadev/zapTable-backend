@@ -2,7 +2,6 @@ import {
   Collection,
   Entity,
   OneToMany,
-  OneToOne,
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
@@ -16,15 +15,6 @@ export class User {
   @Property({ nullable: false })
   name: string;
 
-  @OneToMany(() => 'OwnerRole', (o: UserRole) => o.user)
-  ownerRoles = new Collection<UserRole>(this);
-
-  @OneToMany(() => 'StaffRole', (s: UserRole) => s.user)
-  staffRoles = new Collection<UserRole>(this);
-
-  @OneToOne(() => 'AdminRole', (a: UserRole) => a.user)
-  adminRole?: UserRole;
-
   @Property({ unique: true, nullable: false })
   email: string;
 
@@ -32,7 +22,7 @@ export class User {
   password: string;
 
   @OneToMany(() => UserRole, (u) => u.user)
-  role = new Collection<UserRole>(this);
+  roles = new Collection<UserRole>(this);
 
   @Property()
   createdAt = new Date();
