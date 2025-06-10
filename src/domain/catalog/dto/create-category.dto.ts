@@ -18,5 +18,5 @@ export class CreateCategoryDto {
   @IsArray()
   @IsNumber({}, { each: true })
   @IsOptional()
-  productIds: number[];
+  mealIds: number[];
 }

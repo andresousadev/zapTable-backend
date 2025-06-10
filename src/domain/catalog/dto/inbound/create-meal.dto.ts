@@ -9,7 +9,7 @@ import {
   Min,
 } from 'class-validator';
 
-export class CreateProductDto {
+export class CreateMealDto {
   @IsString()
   @IsNotEmpty()
   name: string;
@@ -18,6 +18,7 @@ export class CreateProductDto {
   @IsOptional()
   description?: string;
 
+  // TODO should be an array of photos
   @IsString()
   @IsOptional()
   photoSrc?: string;

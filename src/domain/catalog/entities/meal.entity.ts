@@ -10,12 +10,12 @@ import {
 } from '@mikro-orm/core';
 import { Ingredient } from 'src/domain/catalog/entities/ingredient.entity';
 import { Category } from './category.entity';
-import { ProductAvailability } from './product-availability.entity';
-import { ProductCustomization } from './product-customization.entity';
-import { ProductPrice } from './product-price.entity';
+import { MealAvailability } from './meal-availability.entity';
+import { MealCustomization } from './meal-customization.entity';
+import { MealPrice } from './meal-price.entity';
 
 @Entity()
-export class Product {
+export class Meal {
   @PrimaryKey()
   id: number;
 
@@ -25,8 +25,8 @@ export class Product {
   @Property()
   description: string;
 
-  @Property()
-  photoSrc: string;
+  @Property({ nullable: true })
+  photoSrc?: string;
 
   @Property({ type: 'decimal', precision: 10, scale: 2 })
   defaultPrice: string;
@@ -34,28 +34,28 @@ export class Product {
   @ManyToOne(() => Business, { deleteRule: 'cascade' })
   business: Business;
 
-  @ManyToMany(() => Category, (c) => c.products)
+  @ManyToMany(() => Category, (c) => c.meals)
   categories = new Collection<Category>(this);
 
-  @ManyToMany(() => Ingredient, (i) => i.products, {
+  @ManyToMany(() => Ingredient, (i) => i.meals, {
     owner: true,
-    joinColumn: 'product_id',
+    joinColumn: 'meal_id',
     inverseJoinColumn: 'ingredient_id',
   })
   ingredients = new Collection<Ingredient>(this);
 
-  @OneToMany(() => ProductAvailability, (a) => a.product, {
+  @OneToMany(() => MealAvailability, (a) => a.meal, {
     orphanRemoval: true,
   })
-  availabilities = new Collection<ProductAvailability>(this);
+  availabilities = new Collection<MealAvailability>(this);
 
-  @OneToMany(() => ProductPrice, (p) => p.product, { orphanRemoval: true })
-  prices = new Collection<ProductPrice>(this);
+  @OneToMany(() => MealPrice, (p) => p.meal, { orphanRemoval: true })
+  prices = new Collection<MealPrice>(this);
 
-  @OneToMany(() => ProductCustomization, (c) => c.product, {
+  @OneToMany(() => MealCustomization, (c) => c.meal, {
     orphanRemoval: true,
   })
-  customizations = new Collection<ProductCustomization>(this);
+  customizations = new Collection<MealCustomization>(this);
 
   @Property()
   createdAt = new Date();

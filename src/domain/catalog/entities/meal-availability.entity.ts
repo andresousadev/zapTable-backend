@@ -1,15 +1,15 @@
 import { Entity, ManyToOne, Property, Unique } from '@mikro-orm/core';
 import { Restaurant } from 'src/domain/restaurant/entities/restaurant.entity';
-import { Product } from './product.entity';
+import { Meal } from './meal.entity';
 
 @Entity()
-@Unique({ properties: ['restaurant', 'product'] })
-export class ProductAvailability {
+@Unique({ properties: ['restaurant', 'meal'] })
+export class MealAvailability {
   @ManyToOne(() => Restaurant, { primary: true, deleteRule: 'cascade' })
   restaurant: Restaurant;
 
-  @ManyToOne(() => Product, { primary: true, deleteRule: 'cascade' })
-  product: Product;
+  @ManyToOne(() => Meal, { primary: true, deleteRule: 'cascade' })
+  meal: Meal;
 
   @Property()
   active: boolean = true;

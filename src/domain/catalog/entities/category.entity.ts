@@ -7,8 +7,8 @@ import {
   Property,
   Unique,
 } from '@mikro-orm/core';
+import { Meal } from './meal.entity';
 import { Menu } from './menu.entity';
-import { Product } from './product.entity';
 
 @Entity()
 @Unique({ properties: ['name', 'menu'] })
@@ -22,12 +22,12 @@ export class Category {
   @ManyToOne(() => Menu, { deleteRule: 'cascade' })
   menu: Menu;
 
-  @ManyToMany(() => Product, (p) => p.categories, {
+  @ManyToMany(() => Meal, (p) => p.categories, {
     owner: true,
     joinColumn: 'category_id',
-    inverseJoinColumn: 'product_id',
+    inverseJoinColumn: 'meal_id',
   })
-  products = new Collection<Product>(this);
+  meals = new Collection<Meal>(this);
 
   @Property()
   createdAt = new Date();

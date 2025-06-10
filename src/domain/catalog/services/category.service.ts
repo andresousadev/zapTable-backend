@@ -1,9 +1,9 @@
+import { EntityRepository, wrap } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable } from '@nestjs/common';
-import { Category } from '../entities/category.entity';
-import { EntityRepository, wrap } from '@mikro-orm/core';
 import { CreateCategoryDto } from '../dto/create-category.dto';
-import { Product } from '../entities/product.entity';
+import { Category } from '../entities/category.entity';
+import { Meal } from '../entities/meal.entity';
 
 @Injectable()
 export class CategoryService {
@@ -11,19 +11,19 @@ export class CategoryService {
     @InjectRepository(Category)
     private readonly categoryRepo: EntityRepository<Category>,
 
-    @InjectRepository(Product)
-    private readonly productRepo: EntityRepository<Product>,
+    @InjectRepository(Meal)
+    private readonly mealRepo: EntityRepository<Meal>,
   ) {}
   async create(createCategoryDto: CreateCategoryDto) {
     const category = new Category();
 
-    const { productIds, ...properties } = createCategoryDto;
+    const { mealIds: mealIds, ...properties } = createCategoryDto;
 
     wrap(category).assign(properties, { onlyProperties: true });
 
-    if (productIds?.length) {
-      const products = await this.productRepo.find({ id: { $in: productIds } });
-      category.products.set(products);
+    if (mealIds?.length) {
+      const meals = await this.mealRepo.find({ id: { $in: mealIds } });
+      category.meals.set(meals);
     }
 
     await this.categoryRepo.getEntityManager().persistAndFlush(category);
@@ -40,13 +40,13 @@ export class CategoryService {
   async update(id: number, createCategoryDto: CreateCategoryDto) {
     const category = await this.categoryRepo.findOneOrFail(id);
 
-    const { productIds, ...properties } = createCategoryDto;
+    const { mealIds: mealIds, ...properties } = createCategoryDto;
 
-    if (productIds?.length) {
-      const products = await this.productRepo.find({
-        id: { $in: productIds },
+    if (mealIds?.length) {
+      const meals = await this.mealRepo.find({
+        id: { $in: mealIds },
       });
-      category.products.set(products);
+      category.meals.set(meals);
     }
 
     wrap(category).assign(properties, { onlyProperties: true });

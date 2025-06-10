@@ -10,6 +10,8 @@
     "db:reset": "dotenv -e .env.development.local -- mikro-orm schema:fresh --run",
     "db:update": "dotenv -e .env.development.local -- mikro-orm schema:update --run",
     "dev:first-run": "npm run db:setup && npm run start:dev",
+    "migration:create": "dotenv -e .env.development.local -- mikro-orm migration:create",
+    "migration:up": "dotenv -e .env.development.local -- mikro-orm migration:up",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start --env-file .env.development.local",
     "start:dev": "nest start --debug 0.0.0.0:9229 --watch --env-file .env.development.local",

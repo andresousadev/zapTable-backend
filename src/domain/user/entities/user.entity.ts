@@ -9,6 +9,7 @@ import { UserRole } from './user-role.entity';
 
 @Entity()
 export class User {
+  // TODO: all ids should be uuid7
   @PrimaryKey()
   id: number;
 

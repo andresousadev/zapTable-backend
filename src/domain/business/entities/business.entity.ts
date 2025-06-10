@@ -1,3 +1,5 @@
+import { Meal } from '@app/domain/catalog/entities/meal.entity';
+import { OwnerRole } from '@app/domain/user/entities/owner-role.entity';
 import {
   Collection,
   Entity,
@@ -8,9 +10,7 @@ import {
 } from '@mikro-orm/core';
 import { Ingredient } from 'src/domain/catalog/entities/ingredient.entity';
 import { Menu } from 'src/domain/catalog/entities/menu.entity';
-import { Product } from 'src/domain/catalog/entities/product.entity';
 import { Restaurant } from 'src/domain/restaurant/entities/restaurant.entity';
-import { OwnerRole } from '@app/domain/user/entities/owner-role.entity';
 
 @Entity()
 export class Business {
@@ -23,8 +23,8 @@ export class Business {
   @Property()
   description: string;
 
-  @Property()
-  photoSrc: string;
+  @Property({ nullable: true })
+  photoSrc?: string;
 
   @ManyToOne(() => OwnerRole)
   owner: OwnerRole;
@@ -32,8 +32,8 @@ export class Business {
   @OneToMany(() => Restaurant, (r) => r.business)
   restaurants = new Collection<Restaurant>(this);
 
-  @OneToMany(() => Product, (p) => p.business)
-  products = new Collection<Product>(this);
+  @OneToMany(() => Meal, (p) => p.business)
+  meals = new Collection<Meal>(this);
 
   @OneToMany(() => Menu, (m) => m.business)
   menus = new Collection<Menu>(this);

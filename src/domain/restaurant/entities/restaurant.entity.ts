@@ -19,15 +19,22 @@ export class Restaurant {
   @Property({ unique: true })
   name: string;
 
-  @Property()
-  address: string;
+  // TODO Adicionar slug ao restaurant entity
+  /*
+  @Property({ unique: true })
+  slug: string;
+  */
 
-  @Property()
-  phoneNumber: string;
+  @Property({ nullable: true })
+  address?: string;
 
-  @Property()
-  photoSrc: string;
+  @Property({ nullable: true })
+  phoneNumber?: string;
 
+  @Property({ nullable: true })
+  photoSrc?: string;
+
+  // TODO: Ensure that only owners can create businesss
   @ManyToOne(() => Business, { deleteRule: 'cascade' })
   business: Business;
 

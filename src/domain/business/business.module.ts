@@ -9,4 +9,4 @@ import { BusinessService } from './services/business.service';
   controllers: [BusinessController],
   providers: [BusinessService],
 })
-export class RestaurantModule {}
+export class BusinessModule {}

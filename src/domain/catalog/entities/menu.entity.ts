@@ -4,6 +4,7 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
+  OptionalProps,
   PrimaryKey,
   Property,
   Unique,
@@ -13,17 +14,19 @@ import { Category } from './category.entity';
 @Entity()
 @Unique({ properties: ['name', 'business'] })
 export class Menu {
+  [OptionalProps]?: 'id' | 'createdAt' | 'updatedAt' | 'categories';
+
   @PrimaryKey()
   id: number;
 
   @Property()
   name: string;
 
-  @Property()
-  description: string;
+  @Property({ nullable: true })
+  description?: string;
 
-  @Property()
-  photoSrc: string;
+  @Property({ nullable: true })
+  photoSrc?: string;
 
   @Property()
   active: boolean;
