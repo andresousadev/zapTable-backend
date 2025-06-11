@@ -122,6 +122,12 @@ export class MealService {
     );
 
     const business = this.businessRepo.getReference(businessId);
+    if (!business) {
+      throw new NotFoundException(
+        `Business with id ${businessId} does not exist`,
+      );
+    }
+
     return await this.mealRepo.find(
       { business },
       {

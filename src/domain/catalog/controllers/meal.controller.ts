@@ -33,7 +33,7 @@ export class MealController {
 
   @Get('/business/:businessId')
   findByBusiness(@Param('businessId', ParseIntPipe) id: number) {
-    return this.mealService.findByBusinessId(+id);
+    return this.mealService.findByBusinessId(id);
   }
 
   @Patch(':id')

@@ -4,6 +4,7 @@ import {
   Entity,
   ManyToMany,
   ManyToOne,
+  OptionalProps,
   PrimaryKey,
   Property,
   Unique,
@@ -13,14 +14,17 @@ import { Meal } from './meal.entity';
 @Entity()
 @Unique({ properties: ['name', 'business'] })
 export class Ingredient {
+  // Necessary to create entity without having to provide every field defined here
+  [OptionalProps]?: 'id' | 'createdAt' | 'updatedAt' | 'meals';
+
   @PrimaryKey()
   id: number;
 
   @Property()
   name: string;
 
-  @Property()
-  description: string;
+  @Property({ nullable: true })
+  description?: string;
 
   @Property({ nullable: true })
   photoSrc?: string;

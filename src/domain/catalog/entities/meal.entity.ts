@@ -8,6 +8,7 @@ import {
   OptionalProps,
   PrimaryKey,
   Property,
+  Unique,
 } from '@mikro-orm/core';
 import { Ingredient } from 'src/domain/catalog/entities/ingredient.entity';
 import { Category } from './category.entity';
@@ -16,6 +17,7 @@ import { MealCustomization } from './meal-customization.entity';
 import { MealPrice } from './meal-price.entity';
 
 @Entity()
+@Unique({ properties: ['name', 'business'] })
 export class Meal {
   // Necessary to create entity without having to provide every field defined here
   [OptionalProps]?:
@@ -31,7 +33,6 @@ export class Meal {
   @PrimaryKey()
   id: number;
 
-  // TODO should only be unique for a given business, not for the whole app
   @Property({ unique: true })
   name: string;
 

@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateIngredientDto {
   @IsString()
@@ -16,4 +22,9 @@ export class CreateIngredientDto {
   @IsNumber()
   @IsNotEmpty()
   businessId: number;
+
+  @IsArray()
+  @IsNumber({}, { each: true })
+  @IsOptional()
+  mealIds?: number[];
 }
