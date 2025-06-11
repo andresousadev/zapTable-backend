@@ -176,13 +176,13 @@ export class IngredientService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<void> {
     this.logger.log(
       `operation='remove', message='Received request to delete ingredient', id='${id}'`,
     );
 
     // TODO still need to add permissions
-    const ingredient = this.findOne(id);
+    const ingredient = await this.findOne(id);
 
     await this.em.removeAndFlush(ingredient);
   }
