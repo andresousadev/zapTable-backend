@@ -11,12 +11,25 @@ export class CreateCategoryDto {
   @IsNotEmpty()
   name: string;
 
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @IsString()
+  @IsOptional()
+  color?: string;
+
   @IsNumber()
   @IsNotEmpty()
-  menu: number;
+  businessId: number;
 
   @IsArray()
   @IsNumber({}, { each: true })
   @IsOptional()
-  mealIds: number[];
+  menuIds?: number[];
+
+  @IsArray()
+  @IsNumber({}, { each: true })
+  @IsOptional()
+  mealIds?: number[];
 }

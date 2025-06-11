@@ -128,7 +128,7 @@ export class IngredientService {
     updateIngredientDto: UpdateIngredientDto,
   ): Promise<Ingredient> {
     this.logger.log(
-      `operation='update', message='Received request to update meal', id='${id}', updateIngredientDto='${JSON.stringify(updateIngredientDto)}'`,
+      `operation='update', message='Received request to update ingredient', id='${id}', updateIngredientDto='${JSON.stringify(updateIngredientDto)}'`,
     );
 
     // find one function already verifies if exists or not, throwing if does not exist
@@ -181,7 +181,7 @@ export class IngredientService {
       `operation='remove', message='Received request to delete ingredient', id='${id}'`,
     );
 
-    // TODO still need to add permissions
+    // TODO still need to add permissions, to not allow external business owners to delete
     const ingredient = await this.findOne(id);
 
     await this.em.removeAndFlush(ingredient);

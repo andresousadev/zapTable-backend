@@ -1,3 +1,4 @@
+import { Category } from '@app/domain/catalog/entities/category.entity';
 import { Meal } from '@app/domain/catalog/entities/meal.entity';
 import { OwnerRole } from '@app/domain/user/entities/owner-role.entity';
 import {
@@ -31,6 +32,9 @@ export class Business {
 
   @OneToMany(() => Restaurant, (r) => r.business)
   restaurants = new Collection<Restaurant>(this);
+
+  @OneToMany(() => Category, (r) => r.business)
+  categories = new Collection<Category>(this);
 
   @OneToMany(() => Meal, (p) => p.business)
   meals = new Collection<Meal>(this);

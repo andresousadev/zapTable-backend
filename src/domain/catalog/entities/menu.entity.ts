@@ -2,8 +2,8 @@ import { Business } from '@app/domain/business/entities/business.entity';
 import {
   Collection,
   Entity,
+  ManyToMany,
   ManyToOne,
-  OneToMany,
   OptionalProps,
   PrimaryKey,
   Property,
@@ -34,7 +34,11 @@ export class Menu {
   @ManyToOne(() => Business, { deleteRule: 'cascade' })
   business: Business;
 
-  @OneToMany(() => Category, (c) => c.menu)
+  @ManyToMany(() => Category, (c) => c.menus, {
+    owner: true,
+    joinColumn: 'menu_id',
+    inverseJoinColumn: 'category_id',
+  })
   categories = new Collection<Category>(this);
 
   @Property()
