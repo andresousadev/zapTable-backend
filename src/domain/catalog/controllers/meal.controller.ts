@@ -31,6 +31,11 @@ export class MealController {
     return this.mealService.findOne(+id);
   }
 
+  @Get('/business/:businessId')
+  findByBusiness(@Param('businessId', ParseIntPipe) id: number) {
+    return this.mealService.findByBusinessId(+id);
+  }
+
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,

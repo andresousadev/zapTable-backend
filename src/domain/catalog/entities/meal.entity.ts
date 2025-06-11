@@ -5,6 +5,7 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
+  OptionalProps,
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
@@ -16,14 +17,26 @@ import { MealPrice } from './meal-price.entity';
 
 @Entity()
 export class Meal {
+  // Necessary to create entity without having to provide every field defined here
+  [OptionalProps]?:
+    | 'id'
+    | 'createdAt'
+    | 'updatedAt'
+    | 'categories'
+    | 'ingredients'
+    | 'availabilities'
+    | 'prices'
+    | 'customizations';
+
   @PrimaryKey()
   id: number;
 
+  // TODO should only be unique for a given business, not for the whole app
   @Property({ unique: true })
   name: string;
 
-  @Property()
-  description: string;
+  @Property({ nullable: true })
+  description?: string;
 
   @Property({ nullable: true })
   photoSrc?: string;
