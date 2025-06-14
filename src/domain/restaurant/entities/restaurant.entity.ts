@@ -1,3 +1,4 @@
+import { StaffRole } from '@app/domain/user/entities/staff-role.entity';
 import {
   Collection,
   Entity,
@@ -8,8 +9,7 @@ import {
   Property,
 } from '@mikro-orm/core';
 import { Table } from 'src/domain/restaurant/entities/table.entity';
-import { Business } from './business.entity';
-import { StaffRole } from '@app/domain/user/entities/staff-role.entity';
+import { Business } from '../../business/entities/business.entity';
 
 @Entity()
 export class Restaurant {
@@ -19,15 +19,22 @@ export class Restaurant {
   @Property({ unique: true })
   name: string;
 
-  @Property()
-  address: string;
+  // TODO Adicionar slug ao restaurant entity
+  /*
+  @Property({ unique: true })
+  slug: string;
+  */
 
-  @Property()
-  phoneNumber: string;
+  @Property({ nullable: true })
+  address?: string;
 
-  @Property()
-  photoSrc: string;
+  @Property({ nullable: true })
+  phoneNumber?: string;
 
+  @Property({ nullable: true })
+  photoSrc?: string;
+
+  // TODO: Ensure that only owners can create businesss
   @ManyToOne(() => Business, { deleteRule: 'cascade' })
   business: Business;
 

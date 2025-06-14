@@ -1,13 +1,12 @@
 import {
   IsArray,
-  IsBoolean,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
 
-export class CreateMenuDto {
+export class CreateCategoryDto {
   @IsString()
   @IsNotEmpty()
   name: string;
@@ -18,20 +17,19 @@ export class CreateMenuDto {
 
   @IsString()
   @IsOptional()
-  photoSrc?: string;
-
-  @IsBoolean()
-  @IsNotEmpty()
-  active: boolean;
+  color?: string;
 
   @IsNumber()
   @IsNotEmpty()
   businessId: number;
 
-  // TODO add ingridients
+  @IsArray()
+  @IsNumber({}, { each: true })
+  @IsOptional()
+  menuIds?: number[];
 
   @IsArray()
   @IsNumber({}, { each: true })
   @IsOptional()
-  categoryIds?: number[];
+  mealIds?: number[];
 }

@@ -6,17 +6,25 @@ import {
   IsString,
 } from 'class-validator';
 
-export class CreateCategoryDto {
+export class CreateIngredientDto {
   @IsString()
   @IsNotEmpty()
   name: string;
 
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @IsString()
+  @IsOptional()
+  photoSrc?: string;
+
   @IsNumber()
   @IsNotEmpty()
-  menu: number;
+  businessId: number;
 
   @IsArray()
   @IsNumber({}, { each: true })
   @IsOptional()
-  productIds: number[];
+  mealIds?: number[];
 }

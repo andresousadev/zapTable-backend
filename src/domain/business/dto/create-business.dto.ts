@@ -15,5 +15,7 @@ export class CreateBusinessDto {
 
   @IsNumber()
   @IsNotEmpty()
+  // TODO: Devia se verificar se o user atual é admin, e se não for
+  // verificar que apenas o userId 123 consegue criar business para ownerId=123
   ownerId: number;
 }

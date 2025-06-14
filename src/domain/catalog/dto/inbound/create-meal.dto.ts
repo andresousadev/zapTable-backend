@@ -1,4 +1,3 @@
-import { Transform } from 'class-transformer';
 import {
   IsArray,
   IsNotEmpty,
@@ -6,10 +5,9 @@ import {
   IsOptional,
   IsString,
   Matches,
-  Min,
 } from 'class-validator';
 
-export class CreateProductDto {
+export class CreateMealDto {
   @IsString()
   @IsNotEmpty()
   name: string;
@@ -18,15 +16,14 @@ export class CreateProductDto {
   @IsOptional()
   description?: string;
 
+  // TODO should be an array of photos
   @IsString()
   @IsOptional()
   photoSrc?: string;
 
   @IsString()
   @Matches(/^-?\d+(\.\d{1,2})?$/)
-  @Transform(({ value }) => Number(value))
-  @IsNumber()
-  @Min(0)
+  // TODO add validation for non zero or negative values
   defaultPrice: string;
 
   @IsNumber()

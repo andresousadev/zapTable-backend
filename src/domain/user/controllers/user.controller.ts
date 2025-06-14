@@ -8,9 +8,9 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { UserService } from '../services/user.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { UserService } from '../services/user.service';
 
 @Controller('user')
 export class UserController {
@@ -42,6 +42,7 @@ export class UserController {
     return this.userService.makeStaff(userId, restaurantId);
   }
 
+  // TODO only allow admins to do this
   @Get()
   findAll() {
     return this.userService.findAll();

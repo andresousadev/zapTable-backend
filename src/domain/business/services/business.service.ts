@@ -1,16 +1,16 @@
+import { OwnerRole } from '@app/domain/user/entities/owner-role.entity';
+import { User } from '@app/domain/user/entities/user.entity';
+import { UserNotFoundByIdError } from '@app/domain/user/errors/user.error';
+import { EntityManager, EntityRepository, wrap } from '@mikro-orm/core';
+import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable } from '@nestjs/common';
 import { CreateBusinessDto } from '../dto/create-business.dto';
 import { UpdateBusinessDto } from '../dto/update-business.dto';
-import { InjectRepository } from '@mikro-orm/nestjs';
 import { Business } from '../entities/business.entity';
-import { EntityManager, EntityRepository, wrap } from '@mikro-orm/core';
-import { User } from '@app/domain/user/entities/user.entity';
 import {
   BusinessByUserIdError,
   BusinessNotFoundError,
 } from '../errors/business.error';
-import { UserNotFoundByIdError } from '@app/domain/user/errors/user.error';
-import { OwnerRole } from '@app/domain/user/entities/owner-role.entity';
 
 @Injectable()
 export class BusinessService {

@@ -8,8 +8,8 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { CreateCategoryDto } from '../dto/inbound/create-category.dto';
 import { CategoryService } from '../services/category.service';
-import { CreateCategoryDto } from '../dto/create-category.dto';
 
 @Controller('category')
 export class CategoryController {
@@ -28,6 +28,11 @@ export class CategoryController {
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.categoryService.findOne(id);
+  }
+
+  @Get('/business/:businessId')
+  findByBusiness(@Param('businessId', ParseIntPipe) id: number) {
+    return this.categoryService.findByBusinessId(id);
   }
 
   @Patch(':id')
