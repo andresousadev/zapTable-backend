@@ -21,6 +21,7 @@ export class UserController {
     return this.userService.createUser(createUserDto);
   }
 
+  // TODO only allow admins to do this
   @Post('admin')
   createAdmin(@Param('userId', ParseIntPipe) userId: number) {
     return this.userService.makeAdmin(userId);
@@ -66,6 +67,7 @@ export class UserController {
     return this.userService.update(id, updateUserDto);
   }
 
+  // TODO only allow admins to do this
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.userService.remove(id);

@@ -63,6 +63,15 @@ export class UserService {
     return await this.userRepo.findOne({ email });
   }
 
+  async findByEmailWithRoles(email: string) {
+    return await this.userRepo.findOne(
+      { email },
+      {
+        populate: ['roles'],
+      },
+    );
+  }
+
   async update(id: number, updateUserDto: UpdateUserDto) {
     const user = this.searchForUser(id);
 

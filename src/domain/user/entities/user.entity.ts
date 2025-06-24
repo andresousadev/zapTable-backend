@@ -9,7 +9,6 @@ import { UserRole } from './user-role.entity';
 
 @Entity()
 export class User {
-  // TODO: all ids should be uuid7
   @PrimaryKey()
   id: number;
 
@@ -21,6 +20,10 @@ export class User {
 
   @Property({ hidden: true, nullable: false })
   password: string;
+
+  // TODO migrate this to another table
+  @Property({ nullable: true, hidden: true })
+  refreshToken?: string;
 
   @OneToMany(() => UserRole, (u) => u.user)
   roles = new Collection<UserRole>(this);

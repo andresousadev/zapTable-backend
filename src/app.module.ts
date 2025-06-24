@@ -6,6 +6,7 @@ import { CatalogModule } from './domain/catalog/catalog.module';
 import { OrderModule } from './domain/order/order.module';
 import { RestaurantModule } from './domain/restaurant/restaurant.module';
 import { UserModule } from './domain/user/user.module';
+import { AuthModule } from './auth/auth.module';
 import mikroOrmConfig from './mikro-orm.config';
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import mikroOrmConfig from './mikro-orm.config';
     CatalogModule,
     UserModule,
     OrderModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
