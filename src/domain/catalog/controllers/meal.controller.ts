@@ -28,7 +28,21 @@ export class MealController {
     return this.mealService.create(createMealDto);
   }
 
+  @Get('/business/:businessId')
+  @Roles(Role.OWNER, Role.STAFF)
+  @UseGuards(BusinessAccessGuard)
+  @ApiOperation({ summary: 'All Meals for a specific business' })
+  @ApiResponse({
+    status: 200,
+    description: 'Allows user to query all meals from a spefic business',
+  })
+  findByBusiness(@Param('businessId', ParseIntPipe) id: number) {
+    return this.mealService.findByBusinessId(id);
+  }
+
   @Get('/business/:businessId/:id')
+  @Roles(Role.OWNER, Role.STAFF)
+  @UseGuards(BusinessAccessGuard)
   @ApiOperation({ summary: 'Meal for a specific business' })
   @ApiResponse({
     status: 200,
@@ -41,18 +55,6 @@ export class MealController {
     id: number,
   ) {
     return this.mealService.findOneInBusiness(+id, businessId);
-  }
-
-  @Get('/business/:businessId')
-  @UseGuards(BusinessAccessGuard)
-  @Roles(Role.OWNER, Role.STAFF)
-  @ApiOperation({ summary: 'All Meals for a specific business' })
-  @ApiResponse({
-    status: 200,
-    description: 'Allows user to query all meals from a spefic business',
-  })
-  findByBusiness(@Param('businessId', ParseIntPipe) id: number) {
-    return this.mealService.findByBusinessId(id);
   }
 
   @Patch(':id')
@@ -70,9 +72,9 @@ export class MealController {
     return this.mealService.update(id, updatemealDto);
   }
 
-  @Delete(':id')
-  @UseGuards(BusinessAccessGuard)
+  @Delete('/business/:businessId/:id')
   @Roles(Role.OWNER)
+  @UseGuards(BusinessAccessGuard)
   remove(
     @Param('businessId', ParseIntPipe)
     businessId: number,

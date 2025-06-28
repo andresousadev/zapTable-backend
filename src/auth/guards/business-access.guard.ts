@@ -9,6 +9,7 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
+import { JwtPayload } from '../types/auth.types';
 
 @Injectable()
 export class BusinessAccessGuard implements CanActivate {
@@ -18,19 +19,20 @@ export class BusinessAccessGuard implements CanActivate {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const request = context.switchToHttp().getRequest();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const user = request.user as User;
+    const user = request.user as JwtPayload;
 
-    const businessId =
+    const businessId = Number(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       (request?.params?.businessId as number) ||
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      (request?.body?.businessId as number);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        (request?.body?.businessId as number),
+    );
 
     if (!businessId) {
       throw new ForbiddenException('Business ID required');
     }
 
-    if (user.roles?.map((roleEntity) => roleEntity.role).includes(Role.ADMIN)) {
+    if (user.roles?.map((roleEntity) => roleEntity).includes(Role.ADMIN)) {
       return true;
     }
 
