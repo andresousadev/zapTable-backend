@@ -1,10 +1,12 @@
 import {
   Collection,
   Entity,
+  Enum,
   OneToMany,
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
+import { UserStatus } from '../enums/user-status.enum';
 import { UserRole } from './user-role.entity';
 
 @Entity()
@@ -33,4 +35,7 @@ export class User {
 
   @Property({ onUpdate: () => new Date() })
   updatedAt = new Date();
+
+  @Enum(() => UserStatus)
+  status: UserStatus = UserStatus.ACTIVE;
 }

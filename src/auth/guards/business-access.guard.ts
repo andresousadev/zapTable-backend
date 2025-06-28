@@ -20,8 +20,11 @@ export class BusinessAccessGuard implements CanActivate {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const user = request.user as User;
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const businessId = request.params.businessId as string;
+    const businessId =
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      (request?.params?.businessId as number) ||
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      (request?.body?.businessId as number);
 
     if (!businessId) {
       throw new ForbiddenException('Business ID required');
@@ -50,12 +53,12 @@ export class BusinessAccessGuard implements CanActivate {
     return true;
   }
 
-  private checkBusinessAccess(user: User, businessId: string): boolean {
+  private checkBusinessAccess(user: User, businessId: number): boolean {
     for (const roleEntity of user.roles.getItems()) {
       if (roleEntity instanceof OwnerRole) {
         const hasBusinessAccess = roleEntity.businesses
           .getItems()
-          .some((business) => business.id.toString() === businessId);
+          .some((business) => business.id === businessId);
 
         if (hasBusinessAccess) {
           return true;
@@ -65,7 +68,7 @@ export class BusinessAccessGuard implements CanActivate {
       if (roleEntity instanceof StaffRole) {
         const hasRestaurantAccess = roleEntity.restaurants
           .getItems()
-          .some((restaurant) => restaurant.id.toString() === businessId);
+          .some((restaurant) => restaurant.id === businessId);
         if (hasRestaurantAccess) return true;
       }
     }

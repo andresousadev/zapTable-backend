@@ -14,7 +14,7 @@
     "migration:up": "dotenv -e .env.development.local -- mikro-orm migration:up",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start --env-file .env.development.local",
-    "start:dev": "nest start --debug 0.0.0.0:9229 --watch --env-file .env.development.local",
+    "start:dev": "nest start --debug --watch --env-file .env.development.local",
     "start:debug": "nest start --debug --watch --env-file .env.development.local",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",

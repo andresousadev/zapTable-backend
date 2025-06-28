@@ -1,9 +1,15 @@
 import { OwnerRole } from '@app/domain/user/entities/owner-role.entity';
 import { User } from '@app/domain/user/entities/user.entity';
-import { UserNotFoundByIdError } from '@app/domain/user/errors/user.error';
-import { EntityManager, EntityRepository, wrap } from '@mikro-orm/core';
+import { Role } from '@app/domain/user/enums/role.enum';
+import {
+  EntityManager,
+  EntityRepository,
+  ForeignKeyConstraintViolationException,
+  UniqueConstraintViolationException,
+  wrap,
+} from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateBusinessDto } from '../dto/create-business.dto';
 import { UpdateBusinessDto } from '../dto/update-business.dto';
 import { Business } from '../entities/business.entity';
@@ -17,28 +23,52 @@ export class BusinessService {
   constructor(
     @InjectRepository(Business)
     private readonly businessRepo: EntityRepository<Business>,
+    @InjectRepository(User)
+    private readonly userRepo: EntityRepository<User>,
+    @InjectRepository(OwnerRole)
+    private readonly ownerRoleRepo: EntityRepository<OwnerRole>,
     private readonly em: EntityManager,
   ) {}
-  async create(createBusinessDto: CreateBusinessDto) {
-    const business = new Business();
 
-    const { ownerId, ...properties } = createBusinessDto;
+  async create(createBusinessDto: CreateBusinessDto): Promise<Business> {
+    const { ownerId, ...businessProperties } = createBusinessDto;
 
-    wrap(business).assign(properties, { onlyProperties: true });
+    return await this.em.transactional(async (em) => {
+      try {
+        const user = this.userRepo.getReference(ownerId);
 
-    const user = this.em.getReference(User, ownerId);
+        const business = this.businessRepo.create(businessProperties);
 
-    if (user == null) {
-      throw new UserNotFoundByIdError(ownerId);
-    }
+        const ownerRole = this.ownerRoleRepo.create({
+          user,
+          role: Role.OWNER,
+        });
 
-    const ownerRole = new OwnerRole();
-    ownerRole.businesses.add(business);
-    ownerRole.user = user;
+        business.owner = ownerRole;
+        ownerRole.businesses.add(business);
 
-    business.owner = ownerRole;
+        await em.persistAndFlush([business, ownerRole]);
 
-    await this.businessRepo.getEntityManager().persistAndFlush(business);
+        return business;
+      } catch (error: unknown) {
+        if (error instanceof UniqueConstraintViolationException) {
+          throw new BadRequestException(
+            `Business with name '${createBusinessDto.name}' already exists`,
+          );
+        }
+
+        if (error instanceof ForeignKeyConstraintViolationException) {
+          const errorMessage = error.message.toLowerCase();
+          if (errorMessage.includes('user')) {
+            throw new BadRequestException(
+              `User with id ${ownerId} does not exist`,
+            );
+          }
+        }
+
+        throw error;
+      }
+    });
   }
 
   async findAll() {

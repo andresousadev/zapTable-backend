@@ -1,3 +1,4 @@
+import { CreateUserDto } from '@app/auth/dto/incoming/create-user.dto';
 import { User } from '@app/domain/user/entities/user.entity';
 import { UserService } from '@app/domain/user/services/user.service';
 import {
@@ -15,6 +16,10 @@ export class AuthService {
     private userService: UserService,
     private jwtService: JwtService,
   ) {}
+
+  async signUpUser(createUserDto: CreateUserDto) {
+    return this.userService.createUser(createUserDto);
+  }
 
   async login(email: string, password: string): Promise<AuthResponse> {
     const user = await this.validateUser(email, password);

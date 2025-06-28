@@ -1,6 +1,8 @@
+import { AuthModule } from '@app/auth/auth.module';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { Business } from '../business/entities/business.entity';
+import { UserModule } from '../user/user.module';
 import { CategoryController } from './controllers/category.controller';
 import { IngredientController } from './controllers/ingredient.controller';
 import { MealController } from './controllers/meal.controller';
@@ -29,6 +31,8 @@ import { MenuService } from './services/menu.service';
       Meal,
       Business,
     ]),
+    UserModule,
+    AuthModule,
   ],
   exports: [CatalogModule],
   controllers: [

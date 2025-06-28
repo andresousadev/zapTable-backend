@@ -83,34 +83,29 @@ export class MealService {
     }
   }
 
-  async findAll() {
+  async findOneInBusiness(id: number, businessId: number): Promise<Meal> {
     this.logger.log(
-      `operation='findAll', message='Received request to fetch all meals'`,
+      `operation='findOneInBusiness', message='Received request to fetch meal by id', id='${id}, businessId='${businessId}'`,
     );
 
-    return await this.mealRepo.findAll({
-      populate: ['categories', 'ingredients'],
-    });
-  }
-
-  async findOne(id: number): Promise<Meal> {
-    this.logger.log(
-      `operation='findOne', message='Received request to fetch meal by id', id='${id}'`,
+    const meal = await this.mealRepo.findOne(
+      { id, business: businessId },
+      {
+        populate: [
+          'business',
+          'categories',
+          'ingredients',
+          'availabilities',
+          'prices',
+          'customizations',
+        ],
+      },
     );
-
-    const meal = await this.mealRepo.findOne(id, {
-      populate: [
-        'business',
-        'categories',
-        'ingredients',
-        'availabilities',
-        'prices',
-        'customizations',
-      ],
-    });
 
     if (!meal) {
-      throw new NotFoundException(`Meal with id ${id} not found`);
+      throw new NotFoundException(
+        `Meal with id ${id} on business ${businessId} not found`,
+      );
     }
 
     return meal;
@@ -194,14 +189,16 @@ export class MealService {
     }
   }
 
-  async remove(id: number): Promise<void> {
+  async removeInBusiness(id: number, businessId: number): Promise<void> {
     this.logger.log(
-      `operation='remove', message='Received request to delete meal', id='${id}'`,
+      `operation='removeInBusiness', message='Received request to delete meal', id='${id}, businessId='${businessId}'`,
     );
 
-    const meal = await this.mealRepo.findOne(id);
+    const meal = await this.mealRepo.findOne({ id, business: businessId });
     if (!meal) {
-      throw new NotFoundException(`Meal with id ${id} not found`);
+      throw new NotFoundException(
+        `Meal with id ${id} and businessId ${businessId} not found`,
+      );
     }
 
     await this.em.removeAndFlush(meal);

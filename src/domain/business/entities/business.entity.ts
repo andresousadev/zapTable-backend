@@ -6,6 +6,7 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
+  OptionalProps,
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
@@ -15,14 +16,27 @@ import { Restaurant } from 'src/domain/restaurant/entities/restaurant.entity';
 
 @Entity()
 export class Business {
+  // Necessary to create entity without having to provide every field defined here
+  [OptionalProps]?:
+    | 'id'
+    | 'createdAt'
+    | 'updatedAt'
+    | 'photoSrc'
+    | 'owner'
+    | 'restaurants'
+    | 'categories'
+    | 'meals'
+    | 'menus'
+    | 'ingredients';
+
   @PrimaryKey()
   id: number;
 
   @Property({ unique: true })
   name: string;
 
-  @Property()
-  description: string;
+  @Property({ nullable: true })
+  description?: string;
 
   @Property({ nullable: true })
   photoSrc?: string;

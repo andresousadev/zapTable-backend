@@ -5,7 +5,7 @@ import { PasswordUtil } from '@app/shared/utils/password.util';
 import { EntityManager, EntityRepository, wrap } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from '../dto/create-user.dto';
+import { CreateUserDto } from '../../../auth/dto/incoming/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { User } from '../entities/user.entity';
 import { UserNotFoundByIdError, UserNotFoundError } from '../errors/user.error';
@@ -67,7 +67,8 @@ export class UserService {
     return await this.userRepo.findOne(
       { email },
       {
-        populate: ['roles'],
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        populate: ['roles', 'roles.businesses', 'roles.restaurants'] as any,
       },
     );
   }

@@ -2,7 +2,10 @@ import { Entity, Enum, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { Role } from '../enums/role.enum';
 import { User } from './user.entity';
 
-@Entity({ discriminatorColumn: 'role' })
+@Entity({
+  discriminatorColumn: 'role',
+  abstract: true,
+})
 export abstract class UserRole {
   @PrimaryKey()
   id: number;

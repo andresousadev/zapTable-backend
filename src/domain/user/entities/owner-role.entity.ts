@@ -3,7 +3,7 @@ import { Collection, Entity, OneToMany } from '@mikro-orm/core';
 import { Role } from '../enums/role.enum';
 import { UserRole } from './user-role.entity';
 
-@Entity()
+@Entity({ discriminatorValue: Role.OWNER })
 export class OwnerRole extends UserRole {
   constructor() {
     super();
