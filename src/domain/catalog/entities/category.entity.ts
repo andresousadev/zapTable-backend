@@ -1,33 +1,46 @@
+import { Business } from '@app/domain/business/entities/business.entity';
 import {
   Collection,
   Entity,
   ManyToMany,
   ManyToOne,
+  OptionalProps,
   PrimaryKey,
   Property,
   Unique,
 } from '@mikro-orm/core';
+import { Meal } from './meal.entity';
 import { Menu } from './menu.entity';
-import { Product } from './product.entity';
 
 @Entity()
-@Unique({ properties: ['name', 'menu'] })
+@Unique({ properties: ['name', 'business'] })
 export class Category {
+  [OptionalProps]?: 'id' | 'createdAt' | 'updatedAt' | 'meals' | 'menu';
+
   @PrimaryKey()
   id: number;
 
   @Property()
   name: string;
 
-  @ManyToOne(() => Menu, { deleteRule: 'cascade' })
-  menu: Menu;
+  @Property({ nullable: true })
+  description?: string;
 
-  @ManyToMany(() => Product, (p) => p.categories, {
+  @Property({ nullable: true })
+  color?: string;
+
+  @ManyToMany(() => Menu, (m) => m.categories)
+  menus = new Collection<Menu>(this);
+
+  @ManyToOne(() => Business, { deleteRule: 'cascade' })
+  business: Business;
+
+  @ManyToMany(() => Meal, (p) => p.categories, {
     owner: true,
     joinColumn: 'category_id',
-    inverseJoinColumn: 'product_id',
+    inverseJoinColumn: 'meal_id',
   })
-  products = new Collection<Product>(this);
+  meals = new Collection<Meal>(this);
 
   @Property()
   createdAt = new Date();
