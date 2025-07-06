@@ -5,6 +5,7 @@ import { Role } from '@app/domain/user/enums/role.enum';
 // I personally disagree but let's stick to conventions
 export interface JwtPayload {
   sub: string; //userId
+  name: string;
   email: string;
   roles: Role[];
   iat?: number; //issuedAt
