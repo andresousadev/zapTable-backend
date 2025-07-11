@@ -30,10 +30,11 @@ export class Business {
     | 'ingredients';
 
   @PrimaryKey()
-  id: number;
+  @Property({ type: 'uuid', defaultRaw: 'uuid_generate_v4()' })
+  id!: string;
 
   @Property({ unique: true })
-  name: string;
+  name!: string;
 
   @Property({ nullable: true })
   description?: string;
@@ -42,7 +43,7 @@ export class Business {
   photoSrc?: string;
 
   @ManyToOne(() => OwnerRole)
-  owner: OwnerRole;
+  owner!: OwnerRole;
 
   @OneToMany(() => Restaurant, (r) => r.business)
   restaurants = new Collection<Restaurant>(this);

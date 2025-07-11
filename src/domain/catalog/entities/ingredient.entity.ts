@@ -18,10 +18,11 @@ export class Ingredient {
   [OptionalProps]?: 'id' | 'createdAt' | 'updatedAt' | 'meals';
 
   @PrimaryKey()
-  id: number;
+  @Property({ type: 'uuid', defaultRaw: 'uuid_generate_v4()' })
+  id!: string;
 
   @Property()
-  name: string;
+  name!: string;
 
   @Property({ nullable: true })
   description?: string;
@@ -30,7 +31,7 @@ export class Ingredient {
   photoSrc?: string;
 
   @ManyToOne(() => Business, { deleteRule: 'cascade' })
-  business: Business;
+  business!: Business;
 
   @ManyToMany(() => Meal, (p) => p.ingredients)
   meals = new Collection<Meal>(this);

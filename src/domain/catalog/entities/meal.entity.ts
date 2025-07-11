@@ -10,7 +10,6 @@ import {
   Property,
   Unique,
 } from '@mikro-orm/core';
-import { Ingredient } from 'src/domain/catalog/entities/ingredient.entity';
 import { Category } from './category.entity';
 import { MealAvailability } from './meal-availability.entity';
 import { MealCustomization } from './meal-customization.entity';
@@ -31,10 +30,11 @@ export class Meal {
     | 'customizations';
 
   @PrimaryKey()
-  id: number;
+  @Property({ type: 'uuid', defaultRaw: 'uuid_generate_v4()' })
+  id!: string;
 
   @Property({ unique: true })
-  name: string;
+  name!: string;
 
   @Property({ nullable: true })
   description?: string;
@@ -43,7 +43,7 @@ export class Meal {
   photoSrc?: string;
 
   @Property({ type: 'decimal', precision: 10, scale: 2 })
-  defaultPrice: string;
+  defaultPrice!: number;
 
   @ManyToOne(() => Business, { deleteRule: 'cascade' })
   business: Business;
@@ -51,12 +51,11 @@ export class Meal {
   @ManyToMany(() => Category, (c) => c.meals)
   categories = new Collection<Category>(this);
 
-  @ManyToMany(() => Ingredient, (i) => i.meals, {
-    owner: true,
-    joinColumn: 'meal_id',
-    inverseJoinColumn: 'ingredient_id',
-  })
-  ingredients = new Collection<Ingredient>(this);
+  @Property({ type: 'jsonb', nullable: true })
+  ingredients?: string[];
+
+  @Property({ type: 'jsonb', nullable: true })
+  allergens?: string[];
 
   @OneToMany(() => MealAvailability, (a) => a.meal, {
     orphanRemoval: true,

@@ -18,10 +18,11 @@ export class Category {
   [OptionalProps]?: 'id' | 'createdAt' | 'updatedAt' | 'meals' | 'menu';
 
   @PrimaryKey()
-  id: number;
+  @Property({ type: 'uuid', defaultRaw: 'uuid_generate_v4()' })
+  id!: string;
 
   @Property()
-  name: string;
+  name!: string;
 
   @Property({ nullable: true })
   description?: string;
@@ -33,7 +34,7 @@ export class Category {
   menus = new Collection<Menu>(this);
 
   @ManyToOne(() => Business, { deleteRule: 'cascade' })
-  business: Business;
+  business!: Business;
 
   @ManyToMany(() => Meal, (p) => p.categories, {
     owner: true,

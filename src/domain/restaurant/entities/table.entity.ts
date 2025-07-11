@@ -1,34 +1,37 @@
 import {
+  Collection,
   Entity,
-  Enum,
   ManyToOne,
+  OneToMany,
   PrimaryKey,
   Property,
+  Rel,
   Unique,
 } from '@mikro-orm/core';
-import { TableStatus } from '../enums/table-status.enum';
 import { Restaurant } from './restaurant.entity';
+import { TableSession } from './table-session.entity';
 
 @Entity()
-@Unique({ properties: ['tableNumber', 'restaurant'] })
+@Unique({ properties: ['tableNumber', 'restaurant', 'qrCode'] })
 export class Table {
   @PrimaryKey()
-  id: number;
+  @Property({ type: 'uuid', defaultRaw: 'uuid_generate_v4()' })
+  id!: string;
 
   @Property()
-  tableNumber: number;
+  tableNumber!: number;
 
   @Property()
-  qrCode: string;
+  qrCode!: string;
 
-  @Property()
-  active: boolean;
-
-  @Enum(() => TableStatus)
-  status: TableStatus;
+  @Property({ default: true })
+  isAvailable: boolean;
 
   @ManyToOne(() => Restaurant, { deleteRule: 'cascade' })
-  restaurant: Restaurant;
+  restaurant!: Rel<Restaurant>;
+
+  @OneToMany(() => TableSession, (s) => s.table)
+  sessions = new Collection<TableSession>(this);
 
   @Property()
   createdAt = new Date();

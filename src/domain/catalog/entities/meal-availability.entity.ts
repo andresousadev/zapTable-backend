@@ -6,10 +6,10 @@ import { Meal } from './meal.entity';
 @Unique({ properties: ['restaurant', 'meal'] })
 export class MealAvailability {
   @ManyToOne(() => Restaurant, { primary: true, deleteRule: 'cascade' })
-  restaurant: Restaurant;
+  restaurant!: Restaurant;
 
   @ManyToOne(() => Meal, { primary: true, deleteRule: 'cascade' })
-  meal: Meal;
+  meal!: Meal;
 
   @Property()
   active: boolean = true;

@@ -17,10 +17,11 @@ export class Menu {
   [OptionalProps]?: 'id' | 'createdAt' | 'updatedAt' | 'categories';
 
   @PrimaryKey()
-  id: number;
+  @Property({ type: 'uuid', defaultRaw: 'uuid_generate_v4()' })
+  id!: string;
 
   @Property()
-  name: string;
+  name!: string;
 
   @Property({ nullable: true })
   description?: string;
@@ -32,7 +33,7 @@ export class Menu {
   active: boolean;
 
   @ManyToOne(() => Business, { deleteRule: 'cascade' })
-  business: Business;
+  business!: Business;
 
   @ManyToMany(() => Category, (c) => c.menus, {
     owner: true,

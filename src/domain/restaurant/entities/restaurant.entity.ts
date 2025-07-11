@@ -14,16 +14,14 @@ import { Business } from '../../business/entities/business.entity';
 @Entity()
 export class Restaurant {
   @PrimaryKey()
-  id: number;
+  @Property({ type: 'uuid', defaultRaw: 'uui_generate_v4()' })
+  id!: string;
 
   @Property({ unique: true })
-  name: string;
+  name!: string;
 
-  // TODO Adicionar slug ao restaurant entity
-  /*
   @Property({ unique: true })
-  slug: string;
-  */
+  slug!: string;
 
   @Property({ nullable: true })
   address?: string;

@@ -6,10 +6,10 @@ import { Meal } from './meal.entity';
 @Unique({ properties: ['meal', 'ingredient'] })
 export class MealCustomization {
   @ManyToOne(() => Meal, { primary: true, deleteRule: 'cascade' })
-  meal: Meal;
+  meal!: Meal;
 
   @ManyToOne(() => Ingredient, { primary: true, deleteRule: 'cascade' })
-  ingredient: Ingredient;
+  ingredient!: Ingredient;
 
   @Property()
   price: number;
