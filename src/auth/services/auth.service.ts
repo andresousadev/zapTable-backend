@@ -54,10 +54,17 @@ export class AuthService {
     return null;
   }
 
-  async refreshTokens(
-    email: string,
-    refreshToken: string,
-  ): Promise<AuthTokens> {
+  async refreshTokens(refreshToken: string): Promise<AuthTokens> {
+    const jwtPayload = await this.decode(refreshToken);
+
+    if (!jwtPayload) {
+      throw new ForbiddenException(
+        'Access Denied - Refresh token does not exist',
+      );
+    }
+
+    const { email } = jwtPayload;
+
     const user = await this.userService.findByEmailWithRoles(email);
 
     if (!user || !user.refreshToken) {
@@ -103,6 +110,15 @@ export class AuthService {
       user.refreshToken,
     );
     return refreshTokenMatches ? user : null;
+  }
+
+  private async decode(refreshToken: string): Promise<JwtPayload | null> {
+    try {
+      return await this.jwtService.decode(refreshToken);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error: unknown) {
+      return null;
+    }
   }
 
   private async generateTokens(user: User): Promise<AuthTokens> {

@@ -29,7 +29,7 @@ export class AuthGuard implements CanActivate {
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const request = context.switchToHttp().getRequest();
-    const token = this.extractTokenFromHeader(request);
+    const token = this.extractTokenFromCookies(request);
 
     if (!token) {
       throw new UnauthorizedException('Access token required');
@@ -54,8 +54,8 @@ export class AuthGuard implements CanActivate {
     return true;
   }
 
-  private extractTokenFromHeader(request: Request): string | undefined {
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
+  private extractTokenFromCookies(request: Request): string | undefined {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return request?.cookies?.access_token;
   }
 }

@@ -1,6 +1,7 @@
 import { ConsoleLogger, Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 
 const logger = new Logger('Main.ts', {
@@ -32,6 +33,8 @@ async function bootstrap() {
     origin: ['http://localhost:3000'],
     credentials: true,
   });
+
+  app.use(cookieParser());
 
   // Enable swaggerUI for local and dev environments
   // Access at localhost:3000/swaggerui

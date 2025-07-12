@@ -6,20 +6,17 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Res,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
+import { Cookies } from '../decorators/cookies.decorator';
 import { CurrentUser } from '../decorators/current-user.decorator';
 import { Public } from '../decorators/public.decorator';
 import { CreateUserDto } from '../dto/incoming/create-user.dto';
-import { RefreshUserToken } from '../dto/incoming/refresh-user-token.dto';
 import { SignInUser } from '../dto/incoming/sign-in-user.dto';
 import { AuthService } from '../services/auth.service';
-import {
-  AuthenticatedUser,
-  AuthResponse,
-  AuthTokens,
-} from '../types/auth.types';
-import { LogoutUser } from './../dto/incoming/logout-user.dto';
+import { AuthenticatedUser, AuthResponse } from '../types/auth.types';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -43,8 +40,32 @@ export class AuthController {
     status: 200,
     description: 'User basic informations',
   })
-  async login(@Body() signInDto: SignInUser): Promise<AuthResponse> {
-    return await this.authService.login(signInDto.email, signInDto.password);
+  async login(
+    @Body() signInDto: SignInUser,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<AuthResponse> {
+    const loginResponse = await this.authService.login(
+      signInDto.email,
+      signInDto.password,
+    );
+
+    response.cookie('access_token', loginResponse.access_token, {
+      path: '/',
+      maxAge: 60 * 15 * 1000,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
+
+    response.cookie('refresh_token', loginResponse.refresh_token, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30 * 1000,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
+
+    return loginResponse;
   }
 
   @Public()
@@ -56,12 +77,26 @@ export class AuthController {
     description: 'Refreshes User JWT Tokens',
   })
   async refreshTokens(
-    @Body() refreshUserTokenDto: RefreshUserToken,
-  ): Promise<AuthTokens> {
-    return await this.authService.refreshTokens(
-      refreshUserTokenDto.email,
-      refreshUserTokenDto.refreshToken,
-    );
+    @Cookies('refresh_token') refreshToken: string,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<void> {
+    const authTokens = await this.authService.refreshTokens(refreshToken);
+
+    response.cookie('access_token', authTokens.access_token, {
+      path: '/',
+      maxAge: 60 * 15 * 1000,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
+
+    response.cookie('refresh_token', authTokens.refresh_token, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30 * 1000,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
   }
 
   @HttpCode(HttpStatus.OK)
@@ -71,8 +106,27 @@ export class AuthController {
     status: 200,
     description: 'Logout from session',
   })
-  async logout(@Body() logoutUserDto: LogoutUser): Promise<void> {
-    await this.authService.logout(logoutUserDto.userId);
+  async logout(
+    @CurrentUser() user: AuthenticatedUser,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<void> {
+    await this.authService.logout(Number(user.userId));
+
+    response.clearCookie('access_token');
+    response.clearCookie('refresh_token');
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Public()
+  @Get('status')
+  checkAuthStatus(
+    @Cookies('acess_token') accessToken: string,
+    @Cookies('refresh_token') refreshToken: string,
+  ) {
+    return {
+      isAuthenticated: !!accessToken,
+      hasRefreshToken: !!refreshToken,
+    };
   }
 
   @Get('me')

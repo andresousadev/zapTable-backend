@@ -1,3 +1,8 @@
+import { CurrentUser } from '@app/auth/decorators/current-user.decorator';
+import { Roles } from '@app/auth/decorators/roles.decorator';
+import { BusinessAccessGuard } from '@app/auth/guards/business-access.guard';
+import { AuthenticatedUser } from '@app/auth/types/auth.types';
+import { Role } from '@app/domain/user/enums/role.enum';
 import {
   Body,
   Controller,
@@ -7,6 +12,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateBusinessDto } from '../dto/create-business.dto';
 import { UpdateBusinessDto } from '../dto/update-business.dto';
@@ -22,30 +28,40 @@ export class BusinessController {
   }
 
   @Get()
+  @Roles(Role.ADMIN)
   findAll() {
     return this.businessService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  @Get('/user')
+  @Roles(Role.ADMIN, Role.OWNER, Role.STAFF)
+  findByUser(@CurrentUser() user: AuthenticatedUser) {
+    return this.businessService.findBusinessWithRestaurantDetailsByUserId(
+      Number(user.userId),
+    );
+  }
+
+  @Get(':businessId')
+  @UseGuards(BusinessAccessGuard)
+  @Roles(Role.ADMIN, Role.OWNER, Role.STAFF)
+  findOne(@Param('businessId', ParseIntPipe) id: number) {
     return this.businessService.findOne(id);
   }
 
-  @Get(':userid')
-  findByUser(@Param('userid', ParseIntPipe) userid: number) {
-    return this.businessService.findByUserId(userid);
-  }
-
-  @Patch(':id')
+  @Patch(':businessId')
+  @UseGuards(BusinessAccessGuard)
+  @Roles(Role.ADMIN, Role.OWNER)
   update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('businessId', ParseIntPipe) id: number,
     @Body() updateBusinessDto: UpdateBusinessDto,
   ) {
     return this.businessService.update(id, updateBusinessDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
+  @Delete(':businessId')
+  @UseGuards(BusinessAccessGuard)
+  @Roles(Role.OWNER)
+  remove(@Param('businessId', ParseIntPipe) id: number) {
     return this.businessService.remove(+id);
   }
 }

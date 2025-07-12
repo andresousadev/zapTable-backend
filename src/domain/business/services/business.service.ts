@@ -79,15 +79,21 @@ export class BusinessService {
     return await this.businessRepo.findOne(id);
   }
 
-  async findByUserId(userid: number) {
+  async findBusinessWithRestaurantDetailsByUserId(userid: number) {
     try {
-      const businesses = await this.businessRepo.find({
-        owner: {
-          user: {
-            id: +userid,
+      const businesses = await this.businessRepo.find(
+        {
+          owner: {
+            user: {
+              id: +userid,
+            },
           },
         },
-      });
+        {
+          populate: ['restaurants'],
+        },
+      );
+
       return businesses;
     } catch (error) {
       console.error('Error fetching business by owner ID: ', error);
