@@ -28,6 +28,8 @@ export class CreateMenuDto {
   @IsNotEmpty()
   businessId: number;
 
+  // TODO add ingridients
+
   @IsArray()
   @IsNumber({}, { each: true })
   @IsOptional()

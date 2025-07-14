@@ -1,35 +1,39 @@
+import { Business } from '@app/domain/business/entities/business.entity';
 import {
   Collection,
   Entity,
   ManyToMany,
   ManyToOne,
+  OptionalProps,
   PrimaryKey,
   Property,
   Unique,
 } from '@mikro-orm/core';
-import { Business } from 'src/domain/restaurant/entities/business.entity';
-import { Product } from './product.entity';
+import { Meal } from './meal.entity';
 
 @Entity()
 @Unique({ properties: ['name', 'business'] })
 export class Ingredient {
+  // Necessary to create entity without having to provide every field defined here
+  [OptionalProps]?: 'id' | 'createdAt' | 'updatedAt' | 'meals';
+
   @PrimaryKey()
   id: number;
 
   @Property()
   name: string;
 
-  @Property()
-  description: string;
+  @Property({ nullable: true })
+  description?: string;
 
-  @Property()
-  photoSrc: string;
+  @Property({ nullable: true })
+  photoSrc?: string;
 
   @ManyToOne(() => Business, { deleteRule: 'cascade' })
   business: Business;
 
-  @ManyToMany(() => Product, (p) => p.ingredients)
-  products = new Collection<Product>(this);
+  @ManyToMany(() => Meal, (p) => p.ingredients)
+  meals = new Collection<Meal>(this);
 
   @Property()
   createdAt = new Date();

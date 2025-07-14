@@ -33,9 +33,4 @@ export class CreateRestaurantDto {
   @IsNumber({}, { each: true })
   @IsOptional()
   staffIds?: number[];
-
-  @IsArray()
-  @IsNumber({}, { each: true })
-  @IsNotEmpty()
-  tableIds: number[];
 }

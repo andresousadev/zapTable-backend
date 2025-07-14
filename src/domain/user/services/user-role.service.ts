@@ -1,13 +1,13 @@
+import { Business } from '@app/domain/business/entities/business.entity';
+import { BusinessAlreadyHasOwner } from '@app/domain/business/errors/business.error';
+import { Restaurant } from '@app/domain/restaurant/entities/restaurant.entity';
+import { EntityRepository } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable } from '@nestjs/common';
-import { EntityRepository } from '@mikro-orm/core';
-import { User } from '../entities/user.entity';
-import { Business } from '@app/domain/restaurant/entities/business.entity';
-import { OwnerRole } from '../entities/owner-role.entity';
 import { AdminRole } from '../entities/admin-role.entity';
+import { OwnerRole } from '../entities/owner-role.entity';
 import { StaffRole } from '../entities/staff-role.entity';
-import { Restaurant } from '@app/domain/restaurant/entities/restaurant.entity';
-import { BusinessAlreadyHasOwner } from '@app/domain/restaurant/errors/business.error';
+import { User } from '../entities/user.entity';
 import {
   AdminRoleAlreadyExists,
   StaffRoleAlreadyExists,

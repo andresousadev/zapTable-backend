@@ -1,8 +1,8 @@
 import { Entity } from '@mikro-orm/core';
-import { UserRole } from './user-role.entity';
 import { Role } from '../enums/role.enum';
+import { UserRole } from './user-role.entity';
 
-@Entity()
+@Entity({ discriminatorValue: Role.ADMIN })
 export class AdminRole extends UserRole {
   constructor() {
     super();

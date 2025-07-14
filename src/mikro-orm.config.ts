@@ -1,46 +1,29 @@
-import { defineConfig, PostgreSqlDriver } from '@mikro-orm/postgresql';
-import { Category } from './domain/catalog/entities/category.entity';
-import { Ingredient } from './domain/catalog/entities/ingredient.entity';
-import { Menu } from './domain/catalog/entities/menu.entity';
-import { Product } from './domain/catalog/entities/product.entity';
-import { Business } from './domain/restaurant/entities/business.entity';
-import { Restaurant } from './domain/restaurant/entities/restaurant.entity';
-import { Table } from './domain/restaurant/entities/table.entity';
-import { AdminRole } from './domain/user/entities/admin-role.entity';
-import { OwnerRole } from './domain/user/entities/owner-role.entity';
-import { StaffRole } from './domain/user/entities/staff-role.entity';
-import { ProductAvailability } from './domain/catalog/entities/product-availability.entity';
-import { ProductCustomization } from './domain/catalog/entities/product-customization.entity';
-import { ProductPrice } from './domain/catalog/entities/product-price.entity';
 import { Migrator } from '@mikro-orm/migrations';
-import { User } from './domain/user/entities/user.entity';
+import { defineConfig, PostgreSqlDriver } from '@mikro-orm/postgresql';
 
 export default defineConfig({
-  host: 'db',
-  port: 5432,
-  user: 'zapTable',
-  password: 'zapTable',
-  dbName: 'zapTable',
+  // TODO: Introduce Zod to parse configs
+  host: process.env.ZAP_TABLE_DB_HOST,
+  port: Number(process.env.ZAP_TABLE_DB_PORT),
+  user: process.env.ZAP_TABLE_DB_USER,
+  password: process.env.ZAP_TABLE_DB_PASSWORD,
+  dbName: process.env.ZAP_TABLE_DB_DBNAME,
   driver: PostgreSqlDriver,
-  entities: [
-    Category,
-    Ingredient,
-    Menu,
-    ProductAvailability,
-    ProductCustomization,
-    ProductPrice,
-    Product,
-    Business,
-    Restaurant,
-    Table,
-    AdminRole,
-    OwnerRole,
-    StaffRole,
-    User,
-  ],
+  entities: ['dist/**/*.entity.js'],
+  entitiesTs: ['src/**/*.entity.ts'],
   extensions: [Migrator],
   migrations: {
     path: 'dist/migrations',
     pathTs: 'src/migrations',
+    safe: process.env.NODE_ENV === 'production',
   },
+  /*
+  seeder: {
+    path: './seeders', // Path to folder containing seeders
+    defaultSeeder: 'DatabaseSeeder', // Default seeder class
+    glob: '!(*.d).{js,ts}', // How to match seeder files
+    emit: 'ts', // Generate seeders in TypeScript
+    fileName: (className: string) => className, // Seeder file name convention
+  },*/
+  debug: true,
 });

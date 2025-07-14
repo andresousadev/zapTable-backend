@@ -1,15 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityManager, EntityRepository, wrap } from '@mikro-orm/core';
-import { CreateUserDto } from '../dto/create-user.dto';
-import { UpdateUserDto } from '../dto/update-user.dto';
-import { PasswordUtil } from '@app/shared/utils/password.util';
-import { User } from '../entities/user.entity';
-import { Business } from '@app/domain/restaurant/entities/business.entity';
-import { UserRoleService } from './user-role.service';
+import { Business } from '@app/domain/business/entities/business.entity';
+import { BusinessNotFoundError } from '@app/domain/business/errors/business.error';
 import { Restaurant } from '@app/domain/restaurant/entities/restaurant.entity';
-import { BusinessNotFoundError } from '@app/domain/restaurant/errors/business.error';
+import { PasswordUtil } from '@app/shared/utils/password.util';
+import { EntityManager, EntityRepository, wrap } from '@mikro-orm/core';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { Injectable } from '@nestjs/common';
+import { CreateUserDto } from '../../../auth/dto/incoming/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { User } from '../entities/user.entity';
 import { UserNotFoundByIdError, UserNotFoundError } from '../errors/user.error';
+import { UserRoleService } from './user-role.service';
 
 @Injectable()
 export class UserService {
@@ -61,6 +61,16 @@ export class UserService {
 
   async findByEmail(email: string) {
     return await this.userRepo.findOne({ email });
+  }
+
+  async findByEmailWithRoles(email: string) {
+    return await this.userRepo.findOne(
+      { email },
+      {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        populate: ['roles', 'roles.businesses', 'roles.restaurants'] as any,
+      },
+    );
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {

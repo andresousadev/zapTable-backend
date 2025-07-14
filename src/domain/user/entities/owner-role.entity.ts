@@ -1,9 +1,9 @@
+import { Business } from '@app/domain/business/entities/business.entity';
 import { Collection, Entity, OneToMany } from '@mikro-orm/core';
-import { UserRole } from './user-role.entity';
 import { Role } from '../enums/role.enum';
-import { Business } from '@app/domain/restaurant/entities/business.entity';
+import { UserRole } from './user-role.entity';
 
-@Entity()
+@Entity({ discriminatorValue: Role.OWNER })
 export class OwnerRole extends UserRole {
   constructor() {
     super();

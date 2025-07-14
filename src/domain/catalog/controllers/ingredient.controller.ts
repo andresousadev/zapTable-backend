@@ -8,9 +8,9 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { IngredientService } from '../services/ingredient.service';
-import { CreateIngredientDto } from '../dto/create-ingredient.dto';
+import { CreateIngredientDto } from '../dto/inbound/create-ingredient.dto';
 import { UpdateIngredientDto } from '../dto/update-ingredient.dto';
+import { IngredientService } from '../services/ingredient.service';
 
 @Controller('ingredient')
 export class IngredientController {
@@ -21,6 +21,7 @@ export class IngredientController {
     return this.ingredientService.create(createIngredientDto);
   }
 
+  // TODO, in the future we should only allow admins to fetch this endpoint
   @Get()
   findAll() {
     return this.ingredientService.findAll();
@@ -29,6 +30,11 @@ export class IngredientController {
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.ingredientService.findOne(id);
+  }
+
+  @Get('/business/:businessId')
+  findByBusiness(@Param('businessId', ParseIntPipe) id: number) {
+    return this.ingredientService.findByBusinessId(id);
   }
 
   @Patch(':id')
