@@ -120,7 +120,7 @@ export class AuthController {
   @Public()
   @Get('status')
   checkAuthStatus(
-    @Cookies('acess_token') accessToken: string,
+    @Cookies('accsess_token') accessToken: string,
     @Cookies('refresh_token') refreshToken: string,
   ) {
     return {
