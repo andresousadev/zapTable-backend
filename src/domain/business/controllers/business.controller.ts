@@ -17,35 +17,35 @@ export class BusinessController {
   constructor(private readonly businessService: BusinessService) {}
 
   @Post()
-  create(@Body() createBusinessDto: CreateBusinessDto) {
-    return this.businessService.create(createBusinessDto);
+  async create(@Body() createBusinessDto: CreateBusinessDto) {
+    return await this.businessService.create(createBusinessDto);
   }
 
   @Get()
-  findAll() {
-    return this.businessService.findAll();
+  async findAll() {
+    return await this.businessService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.businessService.findOne(id);
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    return await this.businessService.findOne(id);
   }
 
   @Get(':userid')
-  findByUser(@Param('userid', ParseIntPipe) userid: number) {
-    return this.businessService.findByUserId(userid);
+  async findByUser(@Param('userid', ParseIntPipe) userid: number) {
+    return await this.businessService.findByUserId(userid);
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateBusinessDto: UpdateBusinessDto,
   ) {
-    return this.businessService.update(id, updateBusinessDto);
+    return await this.businessService.update(id, updateBusinessDto);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.businessService.remove(+id);
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    return await this.businessService.remove(+id);
   }
 }

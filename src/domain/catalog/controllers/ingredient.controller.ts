@@ -17,36 +17,36 @@ export class IngredientController {
   constructor(private readonly ingredientService: IngredientService) {}
 
   @Post()
-  create(@Body() createIngredientDto: CreateIngredientDto) {
-    return this.ingredientService.create(createIngredientDto);
+  async create(@Body() createIngredientDto: CreateIngredientDto) {
+    return await this.ingredientService.create(createIngredientDto);
   }
 
   // TODO, in the future we should only allow admins to fetch this endpoint
   @Get()
-  findAll() {
-    return this.ingredientService.findAll();
+  async findAll() {
+    return await this.ingredientService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.ingredientService.findOne(id);
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    return await this.ingredientService.findOne(id);
   }
 
   @Get('/business/:businessId')
-  findByBusiness(@Param('businessId', ParseIntPipe) id: number) {
-    return this.ingredientService.findByBusinessId(id);
+  async findByBusiness(@Param('businessId', ParseIntPipe) id: number) {
+    return await this.ingredientService.findByBusinessId(id);
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateIngredientDto: UpdateIngredientDto,
   ) {
-    return this.ingredientService.update(id, updateIngredientDto);
+    return await this.ingredientService.update(id, updateIngredientDto);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.ingredientService.remove(id);
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    return await this.ingredientService.remove(id);
   }
 }

@@ -36,6 +36,9 @@ export class Business {
   @Property({ unique: true })
   name!: string;
 
+  @Property({ unique: true })
+  slug!: string;
+
   @Property({ nullable: true })
   description?: string;
 

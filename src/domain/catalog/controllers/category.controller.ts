@@ -16,35 +16,35 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
-  create(@Body() createCategoryDto: CreateCategoryDto) {
-    return this.categoryService.create(createCategoryDto);
+  async create(@Body() createCategoryDto: CreateCategoryDto) {
+    return await this.categoryService.create(createCategoryDto);
   }
 
   @Get()
-  findAll() {
-    return this.categoryService.findAll();
+  async findAll() {
+    return await this.categoryService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.categoryService.findOne(id);
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    return await this.categoryService.findOne(id);
   }
 
   @Get('/business/:businessId')
-  findByBusiness(@Param('businessId', ParseIntPipe) id: number) {
-    return this.categoryService.findByBusinessId(id);
+  async findByBusiness(@Param('businessId', ParseIntPipe) id: number) {
+    return await this.categoryService.findByBusinessId(id);
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() createCategoryDto: CreateCategoryDto,
   ) {
-    return this.categoryService.update(id, createCategoryDto);
+    return await this.categoryService.update(id, createCategoryDto);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.categoryService.remove(id);
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    return await this.categoryService.remove(id);
   }
 }

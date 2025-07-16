@@ -5,19 +5,34 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
+  OptionalProps,
   PrimaryKey,
   Property,
+  Unique,
 } from '@mikro-orm/core';
 import { Table } from 'src/domain/restaurant/entities/table.entity';
 import { Business } from '../../business/entities/business.entity';
 
 @Entity()
+@Unique({ properties: ['business', 'name'] })
+@Unique({ properties: ['business', 'slug'] })
 export class Restaurant {
+  [OptionalProps]?:
+    | 'id'
+    | 'createdAt'
+    | 'updatedAt'
+    | 'address'
+    | 'photoSrc'
+    | 'description'
+    | 'tables'
+    | 'meals'
+    | 'menus';
+
   @PrimaryKey()
   @Property({ type: 'uuid', defaultRaw: 'uui_generate_v4()' })
   id!: string;
 
-  @Property({ unique: true })
+  @Property()
   name!: string;
 
   @Property({ unique: true })
@@ -34,7 +49,7 @@ export class Restaurant {
 
   // TODO: Ensure that only owners can create businesss
   @ManyToOne(() => Business, { deleteRule: 'cascade' })
-  business: Business;
+  business!: Business;
 
   @ManyToMany(() => StaffRole, (s) => s.restaurants, {
     owner: true,

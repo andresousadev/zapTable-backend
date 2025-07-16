@@ -1,11 +1,10 @@
 import {
   IsBoolean,
-  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsString,
+  IsUUID,
 } from 'class-validator';
-import { TableStatus } from '../enums/table-status.enum';
 
 export class CreateTableDto {
   @IsNumber()
@@ -18,13 +17,9 @@ export class CreateTableDto {
 
   @IsBoolean()
   @IsNotEmpty()
-  active: boolean;
+  isAvailable: boolean;
 
-  @IsEnum(TableStatus)
+  @IsUUID()
   @IsNotEmpty()
-  status: TableStatus;
-
-  @IsNumber()
-  @IsNotEmpty()
-  restaurantId: number;
+  restaurantId: string;
 }

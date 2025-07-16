@@ -11,7 +11,8 @@ import {
   TableAlreadyExistsError,
   TableNotFoundError,
 } from '../errors/table.error';
-import { TableStatus } from '../enums/table-status.enum';
+import { Role } from '@app/domain/user/enums/role.enum';
+import { Roles } from '@app/auth/decorators/roles.decorator';
 
 @Injectable()
 export class TableService {
@@ -20,6 +21,8 @@ export class TableService {
     private readonly tableRepo: EntityRepository<Table>,
     private readonly em: EntityManager,
   ) {}
+
+  @Roles(Role.OWNER)
   async create(createTableDto: CreateTableDto) {
     const table = new Table();
 
@@ -54,11 +57,11 @@ export class TableService {
     return await this.tableRepo.findAll();
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return await this.tableRepo.findOne(id);
   }
 
-  async findByRestaurantId(restaurantId: number) {
+  async findByRestaurantId(restaurantId: string) {
     const tables = await this.tableRepo.find({
       restaurant: {
         id: restaurantId,
@@ -68,19 +71,21 @@ export class TableService {
     return tables;
   }
 
-  async changeTableStatus(tableId: number, status: TableStatus) {
+  @Roles(Role.OWNER, Role.STAFF)
+  async changeTableAvailability(tableId: string, isAvailable: boolean) {
     const table = this.tableRepo.getReference(tableId);
 
     if (table == null) {
       throw new TableNotFoundError(tableId);
     }
 
-    table.status = status;
+    table.isAvailable = isAvailable;
 
     await this.tableRepo.getEntityManager().persistAndFlush(table);
   }
 
-  async update(id: number, updateTableDto: UpdateTableDto) {
+  @Roles(Role.OWNER)
+  async update(id: string, updateTableDto: UpdateTableDto) {
     const table = this.tableRepo.getReference(id);
 
     wrap(table).assign(updateTableDto, { onlyProperties: true });
@@ -90,7 +95,8 @@ export class TableService {
     return table;
   }
 
-  async remove(id: number) {
+  @Roles(Role.OWNER)
+  async remove(id: string) {
     const table = this.tableRepo.getReference(id);
 
     if (table != null) {

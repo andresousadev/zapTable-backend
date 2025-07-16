@@ -21,11 +21,11 @@ export class BusinessAccessGuard implements CanActivate {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const user = request.user as JwtPayload;
 
-    const businessId = Number(
+    const businessId = String(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      (request?.params?.businessId as number) ||
+      (request?.params?.businessId as string) ||
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        (request?.body?.businessId as number),
+        (request?.body?.businessId as string),
     );
 
     if (!businessId) {
@@ -55,7 +55,7 @@ export class BusinessAccessGuard implements CanActivate {
     return true;
   }
 
-  private checkBusinessAccess(user: User, businessId: number): boolean {
+  private checkBusinessAccess(user: User, businessId: string): boolean {
     for (const roleEntity of user.roles.getItems()) {
       if (roleEntity instanceof OwnerRole) {
         const hasBusinessAccess = roleEntity.businesses

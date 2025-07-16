@@ -1,7 +1,7 @@
 import { BaseException } from '@app/domain/errors/base.exception';
 
 export class BusinessNotFoundError extends BaseException {
-  constructor(businessId: number, error?: Error) {
+  constructor(businessId: string, error?: Error) {
     super(
       `Business with the id ${businessId} not found. ${error?.message}`,
       404,
@@ -10,7 +10,7 @@ export class BusinessNotFoundError extends BaseException {
 }
 
 export class BusinessAlreadyHasOwner extends BaseException {
-  constructor(businessId: number, error?: Error) {
+  constructor(businessId: string, error?: Error) {
     super(
       `Business with the id ${businessId} already has an assigned owner. ${error?.message}`,
       409,

@@ -1,93 +1,215 @@
-import { Utils } from '@app/shared/utils/utils.util';
-import { EntityRepository, wrap } from '@mikro-orm/core';
+import { EntityRepository, QueryOrder } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityManager } from '@mikro-orm/postgresql';
-import { Injectable } from '@nestjs/common';
-import { Business } from '../../business/entities/business.entity';
-import { BusinessNotFoundError } from '../../business/errors/business.error';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateRestaurantDto } from '../dto/create-restaurant.dto';
 import { UpdateRestaurantDto } from '../dto/update-restaurant.dto';
 import { Restaurant } from '../entities/restaurant.entity';
-import {
-  RestaurantByBusinessIdError,
-  RestaurantNotFoundError,
-  RestaurantWithoutNameError,
-} from '../errors/restaurant.error';
+import { Roles } from '@app/auth/decorators/roles.decorator';
+import { Role } from '@app/domain/user/enums/role.enum';
+import { BusinessService } from '@app/domain/business/services/business.service';
 
 @Injectable()
 export class RestaurantService {
   constructor(
     @InjectRepository(Restaurant)
     private readonly restaurantRepo: EntityRepository<Restaurant>,
-    private readonly em: EntityManager,
+    private readonly businessService: BusinessService,
   ) {}
-  async create(createRestaurantDto: CreateRestaurantDto) {
-    const { name, businessId, ...properties } = createRestaurantDto;
 
-    const business = this.em.getReference(Business, businessId);
+  @Roles(Role.ADMIN)
+  async create(businessSlug: string, createRestaurantDto: CreateRestaurantDto) {
+    const { name, slug } = createRestaurantDto;
 
-    if (business == null) {
-      throw new BusinessNotFoundError(businessId);
+    const business =
+      await this.businessService.getBusinessEntityBySlug(businessSlug);
+
+    const existingByName = await this.restaurantRepo.findOne({
+      name: name,
+      business: business.id,
+    });
+
+    if (existingByName) {
+      throw new ConflictException(
+        `Restaurant with name ${name} already exists withing business ${businessSlug}.`,
+      );
     }
 
-    if (name == null) {
-      throw new RestaurantWithoutNameError();
+    const existingBySlug = await this.restaurantRepo.findOne({
+      slug,
+      business: business.id,
+    });
+
+    if (existingBySlug) {
+      throw new ConflictException(
+        `Restaurant with slug ${slug} already exists within ${businessSlug}`,
+      );
     }
 
-    const restaurant = new Restaurant();
-
-    const filteredProperties = Utils.excludeUndefinedProperties(properties);
-
-    wrap(restaurant).assign(filteredProperties, { onlyProperties: true });
-
-    restaurant.business = business;
-    restaurant.name = name;
-
-    await this.restaurantRepo.getEntityManager().persistAndFlush(restaurant);
-  }
-
-  async findAll() {
-    return await this.restaurantRepo.findAll();
-  }
-
-  async findOne(id: number) {
-    return await this.restaurantRepo.findOne(id);
-  }
-
-  async findByBusinessId(businessId: number) {
     try {
-      const restaurants = await this.restaurantRepo.find({
-        business: {
-          id: businessId,
-        },
+      const restaurant = this.restaurantRepo.create({
+        ...createRestaurantDto,
+        business: business,
       });
+
+      await this.restaurantRepo.getEntityManager().persistAndFlush(restaurant);
+    } catch (error) {
+      throw new InternalServerErrorException(
+        error,
+        'Failed to create restaurant due to an unexpected error.',
+      );
+    }
+  }
+
+  async findAllRestaurantsForBusiness(
+    businessSlug: string,
+    populateTables: boolean = false,
+  ) {
+    try {
+      const business =
+        await this.businessService.getBusinessEntityBySlug(businessSlug);
+
+      const options = populateTables ? { populate: ['tables'] as const } : {};
+
+      const restaurants = await this.restaurantRepo.find(
+        {
+          business: business.id,
+        },
+        {
+          ...options,
+          orderBy: { name: QueryOrder.ASC },
+          populate: ['business'] as const,
+        },
+      );
 
       return restaurants;
     } catch (error) {
-      console.error('Error fetching restaurants by business ID', error);
-      throw new RestaurantByBusinessIdError(businessId);
+      throw new InternalServerErrorException(
+        error,
+        'Failed to retrieve restaurants due to an unexpected error',
+      );
     }
   }
 
-  async update(id: number, updateRestaurantDto: UpdateRestaurantDto) {
-    const restaurant = this.restaurantRepo.getReference(id);
-
-    if (restaurant == null) {
-      throw new RestaurantNotFoundError(id);
-    }
-
-    wrap(restaurant).assign(updateRestaurantDto, { onlyProperties: true });
-
-    await this.restaurantRepo.getEntityManager().persistAndFlush(restaurant);
+  async findRestaurantByIdForBusiness(businessSlug: string, id: string) {
+    const restaurant = await this.restaurantRepo.findOneOrFail(
+      { id: id, business: { slug: businessSlug } },
+      {
+        populate: ['business'] as const,
+        failHandler: () =>
+          new NotFoundException(
+            `Restaurant with ID '${id}' not found for business '${businessSlug}'.`,
+          ),
+      },
+    );
+    return restaurant;
   }
 
-  async remove(id: number) {
-    const restaurant = this.restaurantRepo.getReference(id);
+  async findRestaurantBySlugForBusiness(
+    businessSlug: string,
+    restaurantSlug: string,
+  ) {
+    const restaurant = await this.restaurantRepo.findOneOrFail(
+      { slug: restaurantSlug, business: { slug: businessSlug } },
+      {
+        populate: ['business'] as const,
+        failHandler: () =>
+          new NotFoundException(
+            `Restaurant with slug '${restaurantSlug}' not found for business '${businessSlug}'.`,
+          ),
+      },
+    );
+    return restaurant;
+  }
 
-    if (restaurant == null) {
-      throw new RestaurantNotFoundError(id);
+  @Roles(Role.OWNER)
+  async updateRestaurantForBusiness(
+    businessSlug: string,
+    restaurantSlug: string,
+    updateRestaurantDto: UpdateRestaurantDto,
+  ) {
+    const restaurant = await this.restaurantRepo.findOneOrFail(
+      { slug: restaurantSlug, business: { slug: businessSlug } },
+      {
+        populate: ['business'] as const,
+        failHandler: () =>
+          new NotFoundException(
+            `Restaurant with id '${restaurantSlug}' not found for business '${businessSlug}'.`,
+          ),
+      },
+    );
+
+    if (
+      updateRestaurantDto.name &&
+      updateRestaurantDto.name !== restaurant.name
+    ) {
+      const existingByName = await this.restaurantRepo.findOne({
+        name: updateRestaurantDto.name,
+        business: restaurant.business.id,
+      });
+
+      if (existingByName && existingByName.id !== restaurant.id) {
+        throw new ConflictException(
+          `Restaurant with name '${updateRestaurantDto.name}' already exists within business '${businessSlug}'.`,
+        );
+      }
     }
 
-    await this.restaurantRepo.getEntityManager().removeAndFlush(restaurant);
+    if (
+      updateRestaurantDto.slug &&
+      updateRestaurantDto.slug !== restaurant.slug
+    ) {
+      const existingBySlug = await this.restaurantRepo.findOne({
+        slug: updateRestaurantDto.slug,
+        business: restaurant.business.id,
+      });
+
+      if (existingBySlug && existingBySlug.id !== restaurant.id) {
+        throw new ConflictException(
+          `Restaurant with slug '${updateRestaurantDto.slug}' already exists within business '${businessSlug}'.`,
+        );
+      }
+    }
+
+    try {
+      Object.assign(restaurant, updateRestaurantDto);
+
+      await this.restaurantRepo.getEntityManager().persistAndFlush(restaurant);
+
+      return restaurant;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        error,
+        'Failed to update restaurant due to an unexpected error.',
+      );
+    }
+  }
+
+  @Roles(Role.OWNER)
+  async deleteRestaurantForBusiness(
+    businessSlug: string,
+    restaurantSlug: string,
+  ) {
+    const restaurant = await this.restaurantRepo.findOneOrFail(
+      { slug: restaurantSlug, business: { slug: businessSlug } },
+      {
+        failHandler: () =>
+          new NotFoundException(
+            `Restaurant with slug '${restaurantSlug}' not found for business '${businessSlug}'.`,
+          ),
+      },
+    );
+    try {
+      await this.restaurantRepo.getEntityManager().removeAndFlush(restaurant);
+    } catch (error) {
+      throw new InternalServerErrorException(
+        error,
+        'Failed to delete restaurant due to an unexpected error. It might have uncascaded associated entities or other database constraints.',
+      );
+    }
   }
 }

@@ -23,27 +23,27 @@ export class UserController {
 
   @Get(':id')
   @Roles(Role.ADMIN)
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.userService.findOne(id);
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    return await this.userService.findOne(id);
   }
 
   @Get(':email')
   @Roles(Role.ADMIN)
-  findByEmail(@Param('email') email: string) {
-    return this.userService.findByEmail(email);
+  async findByEmail(@Param('email') email: string) {
+    return await this.userService.findByEmail(email);
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return this.userService.update(id, updateUserDto);
+    return await this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.userService.remove(id);
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    return await this.userService.remove(id);
   }
 
   // Test endpoint for business access guard
@@ -55,7 +55,7 @@ export class UserController {
     status: 200,
     description: 'Business access granted',
   })
-  async testBusinessAccess(
+  testBusinessAccess(
     @CurrentUser() user: AuthenticatedUser,
     @Param('businessId') businessId: string,
   ) {
@@ -79,13 +79,15 @@ export class UserController {
     description: 'User roles debug information',
   })
   async debugUserRoles(@CurrentUser() user: AuthenticatedUser) {
-    const userWithRoles = await this.userService.findByEmailWithRoles(user.email);
-    
+    const userWithRoles = await this.userService.findByEmailWithRoles(
+      user.email,
+    );
+
     if (!userWithRoles) {
       throw new Error('User not found');
     }
 
-    const rolesDebug = userWithRoles.roles.getItems().map(role => ({
+    const rolesDebug = userWithRoles.roles.getItems().map((role) => ({
       id: role.id,
       role: role.role,
       type: role.constructor.name,

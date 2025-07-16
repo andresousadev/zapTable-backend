@@ -9,7 +9,11 @@ import {
   wrap,
 } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateBusinessDto } from '../dto/create-business.dto';
 import { UpdateBusinessDto } from '../dto/update-business.dto';
 import { Business } from '../entities/business.entity';
@@ -75,8 +79,25 @@ export class BusinessService {
     return await this.businessRepo.findAll();
   }
 
-  async findOne(id: number) {
-    return await this.businessRepo.findOne(id);
+  public async getBusinessEntityById(id: string) {
+    const business = await this.businessRepo.findOneOrFail(id, {
+      failHandler: () =>
+        new NotFoundException(`Business with Id ${id} not found`),
+    });
+
+    return business;
+  }
+
+  public async getBusinessEntityBySlug(slug: string) {
+    const business = await this.businessRepo.findOneOrFail(
+      { slug },
+      {
+        failHandler: () =>
+          new NotFoundException(`Business with slug ${slug} not found`),
+      },
+    );
+
+    return business;
   }
 
   async findByUserId(userid: number) {
@@ -95,7 +116,7 @@ export class BusinessService {
     }
   }
 
-  async update(id: number, updateBusinessDto: UpdateBusinessDto) {
+  async update(id: string, updateBusinessDto: UpdateBusinessDto) {
     const business = this.businessRepo.getReference(id);
 
     if (business == null) {
@@ -107,7 +128,7 @@ export class BusinessService {
     await this.businessRepo.getEntityManager().persistAndFlush(business);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const business = this.businessRepo.getReference(id);
 
     if (business == null) {

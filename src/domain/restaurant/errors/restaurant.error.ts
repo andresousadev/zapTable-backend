@@ -1,7 +1,7 @@
 import { BaseException } from '@app/domain/errors/base.exception';
 
 export class RestaurantNotFoundError extends BaseException {
-  constructor(restaurantId: number) {
+  constructor(restaurantId: string) {
     super(`Restaurant with the id ${restaurantId} not found`, 404);
   }
 }
@@ -13,7 +13,7 @@ export class RestaurantWithoutNameError extends BaseException {
 }
 
 export class RestaurantByBusinessIdError extends BaseException {
-  constructor(businessId: number) {
+  constructor(businessId: string) {
     super(`Error fetching restaurants by the business id ${businessId}`, 500);
   }
 }

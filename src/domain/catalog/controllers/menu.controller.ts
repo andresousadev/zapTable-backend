@@ -17,30 +17,30 @@ export class MenuController {
   constructor(private readonly menuService: MenuService) {}
 
   @Post()
-  create(@Body() createMenuDto: CreateMenuDto) {
-    return this.menuService.create(createMenuDto);
+  async create(@Body() createMenuDto: CreateMenuDto) {
+    return await this.menuService.create(createMenuDto);
   }
 
   @Get()
-  findAll() {
-    return this.menuService.findAll();
+  async findAll() {
+    return await this.menuService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.menuService.findOne(id);
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    return await this.menuService.findOne(id);
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateMenuDto: UpdateMenuDto,
   ) {
-    return this.menuService.update(id, updateMenuDto);
+    return await this.menuService.update(id, updateMenuDto);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.menuService.remove(id);
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    return await this.menuService.remove(id);
   }
 }

@@ -5,12 +5,17 @@ import {
   IsOptional,
   IsPhoneNumber,
   IsString,
+  IsUUID,
 } from 'class-validator';
 
 export class CreateRestaurantDto {
   @IsString()
   @IsNotEmpty()
   name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  slug: string;
 
   @IsString()
   @IsOptional()
@@ -25,9 +30,9 @@ export class CreateRestaurantDto {
   @IsOptional()
   photoSrc?: string;
 
-  @IsNumber()
+  @IsUUID()
   @IsNotEmpty()
-  businessId: number;
+  businessId: string;
 
   @IsArray()
   @IsNumber({}, { each: true })

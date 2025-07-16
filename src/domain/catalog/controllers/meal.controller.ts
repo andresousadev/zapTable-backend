@@ -24,8 +24,8 @@ export class MealController {
   @Post()
   @Roles(Role.OWNER)
   @UseGuards(BusinessAccessGuard)
-  create(@Body() createMealDto: CreateMealDto) {
-    return this.mealService.create(createMealDto);
+  async create(@Body() createMealDto: CreateMealDto) {
+    return await this.mealService.create(createMealDto);
   }
 
   @Get('/business/:businessId')
@@ -36,8 +36,8 @@ export class MealController {
     status: 200,
     description: 'Allows user to query all meals from a spefic business',
   })
-  findByBusiness(@Param('businessId', ParseIntPipe) id: number) {
-    return this.mealService.findByBusinessId(id);
+  async findByBusiness(@Param('businessId', ParseIntPipe) id: number) {
+    return await this.mealService.findByBusinessId(id);
   }
 
   @Get('/business/:businessId/:id')
@@ -48,13 +48,13 @@ export class MealController {
     status: 200,
     description: 'Search meal by Id for a spefic business',
   })
-  findOne(
+  async findOne(
     @Param('businessId', ParseIntPipe)
     businessId: number,
     @Param('id', ParseIntPipe)
     id: number,
   ) {
-    return this.mealService.findOneInBusiness(+id, businessId);
+    return await this.mealService.findOneInBusiness(+id, businessId);
   }
 
   @Patch(':id')
@@ -65,22 +65,22 @@ export class MealController {
     status: 200,
     description: 'Update meal information',
   })
-  update(
+  async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updatemealDto: UpdateMealDto,
   ) {
-    return this.mealService.update(id, updatemealDto);
+    return await this.mealService.update(id, updatemealDto);
   }
 
   @Delete('/business/:businessId/:id')
   @Roles(Role.OWNER)
   @UseGuards(BusinessAccessGuard)
-  remove(
+  async remove(
     @Param('businessId', ParseIntPipe)
     businessId: number,
     @Param('id', ParseIntPipe)
     id: number,
   ) {
-    return this.mealService.removeInBusiness(id, businessId);
+    return await this.mealService.removeInBusiness(id, businessId);
   }
 }
