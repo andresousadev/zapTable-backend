@@ -3,6 +3,7 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
+  OptionalProps,
   PrimaryKey,
   Property,
   Rel,
@@ -14,6 +15,13 @@ import { TableSession } from './table-session.entity';
 @Entity()
 @Unique({ properties: ['tableNumber', 'restaurant', 'qrCode'] })
 export class Table {
+  [OptionalProps]?:
+    | 'id'
+    | 'createdAt'
+    | 'updatedAt'
+    | 'description'
+    | 'sessions';
+
   @PrimaryKey()
   @Property({ type: 'uuid', defaultRaw: 'uuid_generate_v4()' })
   id!: string;
@@ -25,7 +33,7 @@ export class Table {
   qrCode!: string;
 
   @Property({ default: true })
-  isAvailable: boolean;
+  isAvailable!: boolean;
 
   @ManyToOne(() => Restaurant, { deleteRule: 'cascade' })
   restaurant!: Rel<Restaurant>;

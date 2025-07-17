@@ -9,8 +9,6 @@ import {
 import { CreateRestaurantDto } from '../dto/create-restaurant.dto';
 import { UpdateRestaurantDto } from '../dto/update-restaurant.dto';
 import { Restaurant } from '../entities/restaurant.entity';
-import { Roles } from '@app/auth/decorators/roles.decorator';
-import { Role } from '@app/domain/user/enums/role.enum';
 import { BusinessService } from '@app/domain/business/services/business.service';
 
 @Injectable()
@@ -21,7 +19,6 @@ export class RestaurantService {
     private readonly businessService: BusinessService,
   ) {}
 
-  @Roles(Role.ADMIN)
   async create(businessSlug: string, createRestaurantDto: CreateRestaurantDto) {
     const { name, slug } = createRestaurantDto;
 
@@ -126,7 +123,6 @@ export class RestaurantService {
     return restaurant;
   }
 
-  @Roles(Role.OWNER)
   async updateRestaurantForBusiness(
     businessSlug: string,
     restaurantSlug: string,
@@ -189,7 +185,6 @@ export class RestaurantService {
     }
   }
 
-  @Roles(Role.OWNER)
   async deleteRestaurantForBusiness(
     businessSlug: string,
     restaurantSlug: string,
