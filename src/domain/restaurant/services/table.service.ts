@@ -90,6 +90,31 @@ export class TableService {
     }
   }
 
+  async findTableByNumberForRestaurant(
+    businessSlug: string,
+    restaurantSlug: string,
+    tableNumber: number,
+  ) {
+    const table = await this.tableRepo.findOneOrFail(
+      {
+        tableNumber: tableNumber,
+        restaurant: {
+          slug: restaurantSlug,
+          business: { slug: businessSlug },
+        },
+      },
+      {
+        populate: ['restaurant.business'] as const,
+        failHandler: () =>
+          new NotFoundException(
+            `Table ${tableNumber} not found in restaurant '${restaurantSlug}' within business '${businessSlug}'.`,
+          ),
+      },
+    );
+
+    return table;
+  }
+
   async findTableByCompositeKey(
     businessSlug: string,
     restaurantSlug: string,
