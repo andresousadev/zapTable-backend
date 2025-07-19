@@ -31,9 +31,9 @@ export class BusinessDto {
   @IsOptional()
   categories?: CategoryDto[];
 
-  @Type(() => MealDto)
+  @Type(() => ProductDto)
   @IsOptional()
-  meals?: MealDto[];
+  products?: ProductDto[];
 
   @Type(() => MenuDto)
   @IsOptional()

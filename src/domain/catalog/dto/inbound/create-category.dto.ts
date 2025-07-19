@@ -1,9 +1,9 @@
 import {
   IsArray,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
+  IsUUID,
 } from 'class-validator';
 
 export class CreateCategoryDto {
@@ -19,17 +19,13 @@ export class CreateCategoryDto {
   @IsOptional()
   color?: string;
 
-  @IsNumber()
-  @IsNotEmpty()
-  businessId: number;
+  @IsArray()
+  @IsUUID('4', { each: true })
+  @IsOptional()
+  menuIds?: string[];
 
   @IsArray()
-  @IsNumber({}, { each: true })
+  @IsUUID('4', { each: true })
   @IsOptional()
-  menuIds?: number[];
-
-  @IsArray()
-  @IsNumber({}, { each: true })
-  @IsOptional()
-  mealIds?: number[];
+  productIds?: string[];
 }

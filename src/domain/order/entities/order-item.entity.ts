@@ -1,6 +1,6 @@
 import { Entity, ManyToOne, PrimaryKey, Property, Rel } from '@mikro-orm/core';
 import { Order } from './order.entity';
-import { Meal } from '@app/domain/catalog/entities/meal.entity';
+import { Product } from '@app/domain/catalog/entities/product.entity';
 
 @Entity()
 export class OrderItem {
@@ -11,14 +11,14 @@ export class OrderItem {
   @ManyToOne(() => Order)
   order!: Rel<Order>;
 
-  @ManyToOne(() => Meal, { nullable: true })
-  meal?: Rel<Meal>;
+  @ManyToOne(() => Product, { nullable: true })
+  product?: Rel<Product>;
 
   @Property()
-  mealId!: string;
+  productId!: string;
 
   @Property()
-  mealName!: string;
+  productName!: string;
 
   @Property()
   quantity!: number;

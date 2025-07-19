@@ -1,7 +1,7 @@
 import { BaseException } from '@app/domain/errors/base.exception';
 
-export class MealNotFoundError extends BaseException {
+export class ProductNotFoundError extends BaseException {
   constructor(productId: number) {
-    super(`Meal with the id ${productId} not found.`, 404);
+    super(`Product with the id ${productId} not found.`, 404);
   }
 }

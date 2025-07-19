@@ -1,13 +1,13 @@
+import { Property } from '@mikro-orm/core';
 import {
   IsArray,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
-  Matches,
+  IsUUID,
 } from 'class-validator';
 
-export class CreateMealDto {
+export class CreateProductDto {
   @IsString()
   @IsNotEmpty()
   name: string;
@@ -21,32 +21,34 @@ export class CreateMealDto {
   @IsOptional()
   photoSrc?: string;
 
+  @Property({ type: 'decimal', precision: 10, scale: 2 })
   @IsString()
-  @Matches(/^-?\d+(\.\d{1,2})?$/)
+  @IsNotEmpty()
   // TODO add validation for non zero or negative values
   defaultPrice: string;
 
-  @IsNumber()
-  @IsNotEmpty()
-  businessId: number;
+  @IsArray()
+  @IsUUID('4', { each: true })
+  @IsOptional()
+  categories?: string[];
 
   @IsArray()
-  @IsNumber({}, { each: true })
+  @IsUUID('4', { each: true })
   @IsOptional()
-  ingredientIds?: number[];
+  ingredientIds?: string[];
 
   @IsArray()
-  @IsNumber({}, { each: true })
+  @IsUUID('4', { each: true })
   @IsOptional()
-  availabilityIds?: number[];
+  availabilityIds?: string[];
 
   @IsArray()
-  @IsNumber({}, { each: true })
+  @IsUUID('4', { each: true })
   @IsOptional()
-  priceIds?: number[];
+  priceIds?: string[];
 
   @IsArray()
-  @IsNumber({}, { each: true })
+  @IsUUID('4', { each: true })
   @IsOptional()
-  customizationIds?: number[];
+  customizationIds?: string[];
 }

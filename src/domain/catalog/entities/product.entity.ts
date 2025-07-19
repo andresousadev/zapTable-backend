@@ -11,13 +11,14 @@ import {
   Unique,
 } from '@mikro-orm/core';
 import { Category } from './category.entity';
-import { MealAvailability } from './meal-availability.entity';
-import { MealCustomization } from './meal-customization.entity';
-import { MealPrice } from './meal-price.entity';
+import { ProductAvailability } from './product-availability.entity';
+import { Ingredient } from './ingredient.entity';
+import { ProductPrice } from './product-price.entity';
+import { ProductCustomization } from './product-customization.entity';
 
 @Entity()
 @Unique({ properties: ['name', 'business'] })
-export class Meal {
+export class Product {
   // Necessary to create entity without having to provide every field defined here
   [OptionalProps]?:
     | 'id'
@@ -33,7 +34,7 @@ export class Meal {
   @Property({ type: 'uuid', defaultRaw: 'uuid_generate_v4()' })
   id!: string;
 
-  @Property({ unique: true })
+  @Property()
   name!: string;
 
   @Property({ nullable: true })
@@ -43,32 +44,32 @@ export class Meal {
   photoSrc?: string;
 
   @Property({ type: 'decimal', precision: 10, scale: 2 })
-  defaultPrice!: number;
+  defaultPrice!: string;
 
   @ManyToOne(() => Business, { deleteRule: 'cascade' })
-  business: Business;
+  business!: Business;
 
-  @ManyToMany(() => Category, (c) => c.meals)
+  @ManyToMany(() => Category, (c) => c.products)
   categories = new Collection<Category>(this);
 
-  @Property({ type: 'jsonb', nullable: true })
-  ingredients?: string[];
+  @ManyToMany(() => Ingredient, (i) => i.products)
+  ingredients = new Collection<Ingredient>(this);
 
-  @Property({ type: 'jsonb', nullable: true })
-  allergens?: string[];
+  // @ManyToMany(() => Allergen)
+  // allergens = new Collection<Allergen>(this);
 
-  @OneToMany(() => MealAvailability, (a) => a.meal, {
+  @OneToMany(() => ProductAvailability, (a) => a.product, {
     orphanRemoval: true,
   })
-  availabilities = new Collection<MealAvailability>(this);
+  availabilities = new Collection<ProductAvailability>(this);
 
-  @OneToMany(() => MealPrice, (p) => p.meal, { orphanRemoval: true })
-  prices = new Collection<MealPrice>(this);
+  @OneToMany(() => ProductPrice, (p) => p.product, { orphanRemoval: true })
+  prices = new Collection<ProductPrice>(this);
 
-  @OneToMany(() => MealCustomization, (c) => c.meal, {
+  @OneToMany(() => ProductCustomization, (c) => c.product, {
     orphanRemoval: true,
   })
-  customizations = new Collection<MealCustomization>(this);
+  customizations = new Collection<ProductCustomization>(this);
 
   @Property()
   createdAt = new Date();

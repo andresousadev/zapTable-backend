@@ -11,5 +11,6 @@ import { BusinessService } from './services/business.service';
   imports: [MikroOrmModule.forFeature([Business, User, OwnerRole]), UserModule],
   controllers: [BusinessController],
   providers: [BusinessService],
+  exports: [BusinessService],
 })
 export class BusinessModule {}

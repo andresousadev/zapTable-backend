@@ -1,4 +1,3 @@
-import { Business } from '@app/domain/business/entities/business.entity';
 import {
   EntityManager,
   EntityRepository,
@@ -15,8 +14,8 @@ import {
 import { CreateCategoryDto } from '../dto/inbound/create-category.dto';
 import { UpdateCategoryDto } from '../dto/inbound/update-category.dto';
 import { Category } from '../entities/category.entity';
-import { Meal } from '../entities/meal.entity';
 import { Menu } from '../entities/menu.entity';
+import { Product } from '../entities/product.entity';
 
 @Injectable()
 export class CategoryService {
@@ -27,31 +26,34 @@ export class CategoryService {
   constructor(
     @InjectRepository(Category)
     private readonly categoryRepo: EntityRepository<Category>,
-    @InjectRepository(Business)
-    private readonly businessRepo: EntityRepository<Business>,
-    @InjectRepository(Meal)
-    private readonly mealRepo: EntityRepository<Meal>,
+    @InjectRepository(Product)
+    private readonly productRepo: EntityRepository<Product>,
     @InjectRepository(Menu)
     private readonly menuRepo: EntityRepository<Menu>,
     private readonly em: EntityManager,
   ) {}
 
-  async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
+  async create(
+    businessId: string,
+    createCategoryDto: CreateCategoryDto,
+  ): Promise<Category> {
     this.logger.log(
-      `operation='create', message='Creating category', createCategoryDto='${JSON.stringify(createCategoryDto)}'`,
+      `operation='create', message='Creating category within business ${businessId}', createCategoryDto='${JSON.stringify(createCategoryDto)}'`,
     );
 
-    const { businessId, mealIds, menuIds, ...properties } = createCategoryDto;
+    const { productIds, menuIds, ...properties } = createCategoryDto;
 
     try {
       const category = this.categoryRepo.create({
         ...properties,
-        business: this.businessRepo.getReference(businessId),
+        business: businessId,
       });
 
-      if (mealIds && mealIds.length > 0) {
-        const meals = mealIds.map((id) => this.mealRepo.getReference(id));
-        category.meals.add(meals);
+      if (productIds && productIds.length > 0) {
+        const products = productIds.map((id) =>
+          this.productRepo.getReference(id),
+        );
+        category.products.add(products);
       }
 
       if (menuIds && menuIds.length > 0) {
@@ -86,24 +88,30 @@ export class CategoryService {
     }
   }
 
-  async findAll(): Promise<Category[]> {
+  async findAll(businessId: string): Promise<Category[]> {
     this.logger.log(
-      `operation='findAll', message='Received request to fetch all categories'`,
+      `operation='findAll', message='Received request to fetch all categories within business ${businessId}'`,
     );
 
-    return await this.categoryRepo.findAll({
-      populate: ['meals'],
-    });
+    return await this.categoryRepo.find(
+      { business: businessId },
+      {
+        populate: ['products'],
+      },
+    );
   }
 
-  async findOne(id: number): Promise<Category> {
+  async findOne(businessId: string, id: string): Promise<Category> {
     this.logger.log(
-      `operation='findOne', message='Received request to fetch category by id', id='${id}'`,
+      `operation='findOne', message='Received request to fetch category by id within business ${businessId}', id='${id}'`,
     );
 
-    const category = await this.categoryRepo.findOne(id, {
-      populate: ['meals'],
-    });
+    const category = await this.categoryRepo.findOne(
+      { id: id, business: businessId },
+      {
+        populate: ['products'],
+      },
+    );
 
     if (!category) {
       throw new NotFoundException(`Category with id ${id} not found`);
@@ -112,51 +120,50 @@ export class CategoryService {
     return category;
   }
 
-  async findByBusinessId(businessId: number): Promise<Category[]> {
-    this.logger.log(
-      `operation='findByBusinessId', message='Received request to fetch category by business id', businessId='${businessId}'`,
-    );
+  async findByIds(businessId: string, ids: string[]) {
+    if (ids.length === 0) {
+      return [];
+    }
 
-    const business = this.em.getReference(Business, businessId);
-    if (!business) {
+    const categories = await this.categoryRepo.find({
+      id: { $in: ids },
+      business: businessId,
+    });
+
+    if (categories.length !== ids.length) {
+      const foundIds = new Set(categories.map((c) => c.id));
+      const notFoundIds = ids.filter((id) => !foundIds.has(id));
       throw new NotFoundException(
-        `Business with id ${businessId} does not exist`,
+        `One or more categories not found within business '${businessId}': ${notFoundIds.join(', ')}`,
       );
     }
 
-    return await this.categoryRepo.find(
-      { business },
-      {
-        populate: ['meals'],
-      },
-    );
+    return categories;
   }
 
   async update(
-    id: number,
+    businessId: string,
+    id: string,
     updateCategoryDto: UpdateCategoryDto,
   ): Promise<Category> {
     this.logger.log(
-      `operation='update', message='Received request to update meal', id='${id}', updateCategoryDto='${JSON.stringify(updateCategoryDto)}'`,
+      `operation='update', message='Received request to update category within business ${businessId}', id='${id}', updateCategoryDto='${JSON.stringify(updateCategoryDto)}'`,
     );
 
     // find one function already verifies if exists or not, throwing if does not exist
-    const category = await this.findOne(id);
+    const category = await this.findOne(businessId, id);
 
-    const { businessId, mealIds, menuIds, ...basicProperties } =
-      updateCategoryDto;
+    const { productIds, menuIds, ...basicProperties } = updateCategoryDto;
 
     try {
       Object.assign(category, basicProperties);
 
-      if (businessId !== undefined) {
-        category.business = this.businessRepo.getReference(businessId);
-      }
-
-      if (mealIds && mealIds.length > 0) {
-        category.meals.removeAll();
-        const meals = mealIds.map((id) => this.mealRepo.getReference(id));
-        category.meals.add(meals);
+      if (productIds && productIds.length > 0) {
+        category.products.removeAll();
+        const products = productIds.map((id) =>
+          this.productRepo.getReference(id),
+        );
+        category.products.add(products);
       }
 
       if (menuIds && menuIds.length > 0) {
@@ -192,12 +199,12 @@ export class CategoryService {
     }
   }
 
-  async remove(id: number) {
+  async remove(businessId: string, id: string) {
     this.logger.log(
-      `operation='remove', message='Received request to delete category', id='${id}'`,
+      `operation='remove', message='Received request to delete category within business ${businessId}', id='${id}'`,
     );
 
-    const category = await this.findOne(id);
+    const category = await this.findOne(businessId, id);
 
     await this.em.removeAndFlush(category);
   }

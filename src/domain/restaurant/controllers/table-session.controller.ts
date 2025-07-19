@@ -11,8 +11,6 @@ import {
   Put,
 } from '@nestjs/common';
 import { TableSessionService } from '../services/table-session.service';
-import { Roles } from '@app/auth/decorators/roles.decorator';
-import { Role } from '@app/domain/user/enums/role.enum';
 import { ApiOperation, ApiParam, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { TableSession } from '../entities/table-session.entity';
 import { CreateTableSessionDto } from '../dto/create-table-session.dto';

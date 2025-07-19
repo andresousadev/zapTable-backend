@@ -9,13 +9,13 @@ import {
   Property,
   Unique,
 } from '@mikro-orm/core';
-import { Meal } from './meal.entity';
+import { Product } from './product.entity';
 
 @Entity()
 @Unique({ properties: ['name', 'business'] })
 export class Ingredient {
   // Necessary to create entity without having to provide every field defined here
-  [OptionalProps]?: 'id' | 'createdAt' | 'updatedAt' | 'meals';
+  [OptionalProps]?: 'id' | 'createdAt' | 'updatedAt' | 'products';
 
   @PrimaryKey()
   @Property({ type: 'uuid', defaultRaw: 'uuid_generate_v4()' })
@@ -33,8 +33,8 @@ export class Ingredient {
   @ManyToOne(() => Business, { deleteRule: 'cascade' })
   business!: Business;
 
-  @ManyToMany(() => Meal, (p) => p.ingredients)
-  meals = new Collection<Meal>(this);
+  @ManyToMany(() => Product, (p) => p.ingredients)
+  products = new Collection<Product>(this);
 
   @Property()
   createdAt = new Date();

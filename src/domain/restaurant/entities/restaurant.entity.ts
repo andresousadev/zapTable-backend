@@ -23,10 +23,8 @@ export class Restaurant {
     | 'updatedAt'
     | 'address'
     | 'photoSrc'
-    | 'description'
-    | 'tables'
-    | 'meals'
-    | 'menus';
+    | 'staff'
+    | 'tables';
 
   @PrimaryKey()
   @Property({ type: 'uuid', defaultRaw: 'uui_generate_v4()' })

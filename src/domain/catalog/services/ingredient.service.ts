@@ -15,7 +15,7 @@ import {
 import { CreateIngredientDto } from '../dto/inbound/create-ingredient.dto';
 import { UpdateIngredientDto } from '../dto/update-ingredient.dto';
 import { Ingredient } from '../entities/ingredient.entity';
-import { Meal } from '../entities/meal.entity';
+import { Product } from '../entities/product.entity';
 
 @Injectable()
 export class IngredientService {
@@ -28,8 +28,8 @@ export class IngredientService {
     private readonly ingredientRepo: EntityRepository<Ingredient>,
     @InjectRepository(Business)
     private readonly businessRepo: EntityRepository<Business>,
-    @InjectRepository(Meal)
-    private readonly mealRepo: EntityRepository<Meal>,
+    @InjectRepository(Product)
+    private readonly productRepo: EntityRepository<Product>,
     private readonly em: EntityManager,
   ) {}
   async create(createIngredientDto: CreateIngredientDto): Promise<Ingredient> {
@@ -37,7 +37,7 @@ export class IngredientService {
       `operation='create', message='Creating ingredient', createIngredientDto='${JSON.stringify(createIngredientDto)}'`,
     );
 
-    const { businessId, mealIds, ...basicProperties } = createIngredientDto;
+    const { businessId, productIds, ...basicProperties } = createIngredientDto;
 
     try {
       const ingredient = this.ingredientRepo.create({
@@ -45,9 +45,9 @@ export class IngredientService {
         business: this.businessRepo.getReference(businessId),
       });
 
-      if (mealIds && mealIds.length > 0) {
-        const meals = mealIds.map((id) => this.mealRepo.getReference(id));
-        ingredient.meals.add(meals);
+      if (productIds && productIds.length > 0) {
+        const products = productIds.map((id) => this.productRepo.getReference(id));
+        ingredient.products.add(products);
       }
 
       await this.em.persistAndFlush(ingredient);
@@ -83,7 +83,7 @@ export class IngredientService {
     );
 
     return await this.ingredientRepo.findAll({
-      populate: ['meals'],
+      populate: ['products'],
     });
   }
 
@@ -93,7 +93,7 @@ export class IngredientService {
     );
 
     const ingredient = await this.ingredientRepo.findOne(id, {
-      populate: ['meals'],
+      populate: ['products'],
     });
 
     if (!ingredient) {
@@ -118,7 +118,7 @@ export class IngredientService {
     return await this.ingredientRepo.find(
       { business },
       {
-        populate: ['meals'],
+        populate: ['products'],
       },
     );
   }
@@ -134,7 +134,7 @@ export class IngredientService {
     // find one function already verifies if exists or not, throwing if does not exist
     const ingredient = await this.findOne(id);
 
-    const { businessId, mealIds, ...basicProperties } = updateIngredientDto;
+    const { businessId, productIds, ...basicProperties } = updateIngredientDto;
 
     try {
       Object.assign(ingredient, basicProperties);
@@ -143,10 +143,10 @@ export class IngredientService {
         ingredient.business = this.businessRepo.getReference(businessId);
       }
 
-      if (mealIds && mealIds.length > 0) {
-        ingredient.meals.removeAll();
-        const meals = mealIds.map((id) => this.mealRepo.getReference(id));
-        ingredient.meals.add(meals);
+      if (productIds && productIds.length > 0) {
+        ingredient.products.removeAll();
+        const products = productIds.map((id) => this.productRepo.getReference(id));
+        ingredient.products.add(products);
       }
 
       await this.em.persistAndFlush(ingredient);

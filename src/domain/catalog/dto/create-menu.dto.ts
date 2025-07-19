@@ -5,6 +5,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsUUID,
 } from 'class-validator';
 
 export class CreateMenuDto {
@@ -31,7 +32,7 @@ export class CreateMenuDto {
   // TODO add ingridients
 
   @IsArray()
-  @IsNumber({}, { each: true })
+  @IsUUID('4', { each: true })
   @IsOptional()
-  categoryIds?: number[];
+  categoryIds?: string[];
 }

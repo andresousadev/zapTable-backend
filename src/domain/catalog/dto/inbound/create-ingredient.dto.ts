@@ -4,6 +4,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsUUID,
 } from 'class-validator';
 
 export class CreateIngredientDto {
@@ -24,7 +25,7 @@ export class CreateIngredientDto {
   businessId: number;
 
   @IsArray()
-  @IsNumber({}, { each: true })
+  @IsUUID('4', { each: true })
   @IsOptional()
-  mealIds?: number[];
+  productIds?: string[];
 }

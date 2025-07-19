@@ -8,10 +8,12 @@ import { RestaurantModule } from './domain/restaurant/restaurant.module';
 import { UserModule } from './domain/user/user.module';
 import { AuthModule } from './auth/auth.module';
 import mikroOrmConfig from './mikro-orm.config';
+import { CommonModule } from './common/common.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: ['.env.development.local'] }),
     MikroOrmModule.forRoot(mikroOrmConfig),
+    CommonModule,
     BusinessModule,
     RestaurantModule,
     CatalogModule,

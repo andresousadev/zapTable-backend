@@ -1,5 +1,5 @@
 import { Category } from '@app/domain/catalog/entities/category.entity';
-import { Meal } from '@app/domain/catalog/entities/meal.entity';
+import { Product } from '@app/domain/catalog/entities/product.entity';
 import { OwnerRole } from '@app/domain/user/entities/owner-role.entity';
 import {
   Collection,
@@ -25,7 +25,7 @@ export class Business {
     | 'owner'
     | 'restaurants'
     | 'categories'
-    | 'meals'
+    | 'products'
     | 'menus'
     | 'ingredients';
 
@@ -54,8 +54,8 @@ export class Business {
   @OneToMany(() => Category, (r) => r.business)
   categories = new Collection<Category>(this);
 
-  @OneToMany(() => Meal, (p) => p.business)
-  meals = new Collection<Meal>(this);
+  @OneToMany(() => Product, (p) => p.business)
+  products = new Collection<Product>(this);
 
   @OneToMany(() => Menu, (m) => m.business)
   menus = new Collection<Menu>(this);

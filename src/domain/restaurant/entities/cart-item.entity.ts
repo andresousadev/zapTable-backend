@@ -1,6 +1,6 @@
 import { Entity, ManyToOne, PrimaryKey, Property, Rel } from '@mikro-orm/core';
 import { Cart } from './cart.entity';
-import { Meal } from '@app/domain/catalog/entities/meal.entity';
+import { Product } from '@app/domain/catalog/entities/product.entity';
 
 @Entity()
 export class CartItem {
@@ -8,11 +8,11 @@ export class CartItem {
   @Property({ type: 'uuid', defaultRaw: 'uuid_generate_v4()' })
   id!: string;
 
-  @ManyToOne(() => Cart)
-  cart!: Rel<Cart>;
+  @ManyToOne(() => Cart, { deleteRule: 'cascade' })
+  cart!: Cart;
 
-  @ManyToOne(() => Meal)
-  meal!: Rel<Meal>;
+  @ManyToOne(() => Product)
+  product!: Rel<Product>;
 
   @Property()
   quantity!: number;
